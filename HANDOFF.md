@@ -6,6 +6,21 @@
 2. APK firmada 1.0.1 instalada y actualizada conservando una fixture nativa; recorrido visual Android final pendiente.
 3. Publicación Sites pendiente de recuperar su complemento local; revisión Google Skills pendiente de 11 quizzes y cinco guías ES.
 
+## Reels paper cut (en curso, 2026-10-02)
+
+Plan aprobado: `/Users/luizun/.claude/plans/a-la-aplicaci-n-tambien-starry-sutton.md`. Cuatro fases; **solo la fase 1 (piloto) está hecha y espera la revisión de estilo del usuario** antes de producir los 16 reels restantes.
+
+- Hecho y sin commit (`git status --short`: `M AGENTS.md package.json src/App.tsx`; nuevos `public/reels/`, `scripts/comfy/`, `scripts/reels-art.mjs`, `scripts/validate-reels.mjs`, `src/data/reels.json`, `src/lib/reels.ts`, `src/reels/`, `tests/reels.test.ts`).
+- Verificado: `node --import tsx --test tests/reels.test.ts` → 10/10; `node scripts/validate-reels.mjs --partial` → `PASS reels: 1/17 reels · 2/2 ilustraciones · 34 KB`; `npm run build` → `PASS offline: 16 archivos precargados` con ambos AVIF en `dist/sw.js`. En navegador: visor en 375×812 y escritorio, flechas y Esc, movimiento reducido, CTA que abre la lección 1.01.
+- Sin verificar: recarga sin conexión en `npm run preview`, AVIF y botón atrás en el WebView de Android, gestos táctiles reales.
+- Arte: `npm run reels:art` contra ComfyUI (Comfy Desktop, `127.0.0.1:8188`, Qwen-Image 2512). Unos 6 min por imagen (345-365 s medidos). Fuera del repo: enlace `~/ComfyUI-Shared/models/diffusion_models/qwen-image-2512-Q4_K_M.gguf` y originales en `../../paper-assets/reels/`.
+- Pendiente: fase 2 (guiones de los 17 en `reels.json` y 34 sujetos en `art-manifest.json`), fase 3 (arte por lotes), fase 4 (pestaña «Reels» con feed, registro de visto en la clave `pliegue-ia.reels.v1`, validador sin `--partial`).
+
+Callejones ya vistos:
+- El panel de navegador de Claude casi no dispara `requestAnimationFrame` entre capturas: el reel parece congelado en `--f: 0`. No es un fallo del reloj; intercalar capturas o esperas del panel.
+- El primer prompt de estilo dio un fondo azul con hojas apiladas en `1.1-b`; el manifiesto ya fija «plain cream paper background… no border, no frame, no stacked sheets».
+- No reescribir `package.json` con un serializador JSON: pierde su formato compacto. Editar a mano.
+
 ## Archivos y estado real
 
 Proyecto: `/Users/luizun/github/Cursos/Generative AI Leader/pliegue-ia`. Se creó un repositorio Git local nuevo; el directorio no tenía repositorio antes. Al preparar este traspaso, `git status --short` mostró los archivos nuevos preparados y `git diff --cached --stat` mostró **85 archivos y 17 443 líneas añadidas**, antes de añadir este traspaso y el informe de verificación. `git diff --stat` no mostró cambios fuera del índice en ese momento. No se sobrescribieron commits previos ni se hizo un push.

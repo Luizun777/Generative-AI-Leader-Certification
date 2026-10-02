@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "fps": 12,
+  "reels": [
+    {
+      "unitId": "1.1",
+      "title": "Más que un chatbot",
+      "scenes": [
+        { "kind": "hook", "seconds": 5, "accent": "blue", "title": "Más que un chatbot", "line": "IA generativa para tu empresa" },
+        { "kind": "concept", "seconds": 7, "accent": "orange", "art": "1.1-a", "artAlt": "Un globo de diálogo de papel del que salen un pincel, una nota musical, un cuadro y una claqueta.", "lines": ["La IA generativa crea contenido nuevo:", "texto, imágenes, música y código."] },
+        { "kind": "versus", "seconds": 7.5, "accent": "blue", "a": { "term": "Gemini", "line": "El modelo de IA generativa" }, "b": { "term": "App de Gemini", "line": "Una de las apps creadas con él" } },
+        { "kind": "list", "seconds": 9, "accent": "yellow", "title": "Qué gana una empresa", "points": ["Decidir con mejor información", "Más eficiencia y productividad", "Ideas nuevas y menos costos"] },
+        { "kind": "example", "seconds": 7, "accent": "orange", "art": "1.1-b", "artAlt": "Un escritorio de papel con un portátil, tarjetas con imágenes y un gráfico de barras que sube.", "lines": ["Marketing crea posts con imágenes", "de marca, textos y horarios."] },
+        { "kind": "cta", "seconds": 4.5, "accent": "yellow", "line": "Una tecnología, muchas aplicaciones." }
+      ]
+    }
+  ]
+}

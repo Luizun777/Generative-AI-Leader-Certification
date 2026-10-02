@@ -1,0 +1,8 @@
+{
+  "style": "Paper cut-out collage, layered matte cardstock, hard drop shadows between layers, handmade stop-motion set, flat colors limited to cobalt blue #2447ef, navy #222a42, orange #e76935, yellow #ffcb51, bold simple shapes, single centered subject: {SUBJECT}, on a plain cream paper background #f6f5ef that fills the whole frame, wide empty margins, no border, no frame, no stacked sheets, no text, no letters, no numbers, no logos",
+  "negative": "text, letters, words, numbers, typography, logo, watermark, signature, photograph, photorealistic, 3d render, glossy, gradient, human face, colored background, border",
+  "images": [
+    { "id": "1.1-a", "seed": 110101, "subject": "a big paper speech bubble opening like a box, with a paintbrush, a musical note, a picture frame with a mountain and a film clapperboard flying out of it" },
+    { "id": "1.1-b", "seed": 110112, "subject": "a small paper desk with a laptop, surrounded by floating paper cards with simple pictures of a sun, a mountain and a gift box, and a rising bar chart made of paper strips" }
+  ]
+}
