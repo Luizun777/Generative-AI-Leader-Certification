@@ -16,3 +16,7 @@ test-results/
 playwright-report/
 artifacts/
 android/app/src/main/assets/public/
+!public/downloads/
+!public/downloads/pliegue-ia.apk
+!public/downloads/pliegue-ia.apk.sha256
+.vercel
