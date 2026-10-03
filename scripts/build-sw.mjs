@@ -17,7 +17,9 @@ const urls = paths.map(path => './' + relative(root, path));
 const source = `const CACHE = 'pliegue-ia-${version}';
 const ASSETS = ${JSON.stringify(urls)};
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).catch(async error => { await caches.delete(CACHE); throw error; }));
+  // Audio, art and the page keep their names between versions: fetch them past the HTTP cache,
+  // or a new build could pair its reel timings with the previous narration.
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS.map(url => new Request(url, { cache: 'reload' })))).catch(async error => { await caches.delete(CACHE); throw error; }));
 });
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {

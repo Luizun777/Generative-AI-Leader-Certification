@@ -6,12 +6,204 @@
       "unitId": "1.1",
       "title": "Más que un chatbot",
       "scenes": [
-        { "kind": "hook", "seconds": 5, "accent": "blue", "title": "Más que un chatbot", "line": "IA generativa para tu empresa" },
-        { "kind": "concept", "seconds": 7, "accent": "orange", "art": "1.1-a", "artAlt": "Un globo de diálogo de papel del que salen un pincel, una nota musical, un cuadro y una claqueta.", "lines": ["La IA generativa crea contenido nuevo:", "texto, imágenes, música y código."] },
-        { "kind": "versus", "seconds": 7.5, "accent": "blue", "a": { "term": "Gemini", "line": "El modelo de IA generativa" }, "b": { "term": "App de Gemini", "line": "Una de las apps creadas con él" } },
-        { "kind": "list", "seconds": 9, "accent": "yellow", "title": "Qué gana una empresa", "points": ["Decidir con mejor información", "Más eficiencia y productividad", "Ideas nuevas y menos costos"] },
-        { "kind": "example", "seconds": 7, "accent": "orange", "art": "1.1-b", "artAlt": "Un escritorio de papel con un portátil, tarjetas con imágenes y un gráfico de barras que sube.", "lines": ["Marketing crea posts con imágenes", "de marca, textos y horarios."] },
-        { "kind": "cta", "seconds": 4.5, "accent": "yellow", "line": "Una tecnología, muchas aplicaciones." }
+        { "kind": "hook", "seconds": 5, "accent": "blue", "title": "Más que un chatbot", "line": "IA generativa para tu empresa", "say": "Más que un chatbot. La IA generativa para tu empresa." },
+        { "kind": "concept", "seconds": 7, "accent": "orange", "art": "1.1-a", "artAlt": "Un globo de diálogo de papel del que salen un pincel, una nota musical, un cuadro y una claqueta.", "lines": ["La IA generativa crea contenido nuevo:", "texto, imágenes, música y código."], "from": ["1.02"] },
+        { "kind": "versus", "seconds": 10, "accent": "blue", "a": { "term": "Gemini", "line": "El modelo de IA generativa" }, "b": { "term": "App de Gemini", "line": "Una de las apps creadas con él" }, "from": ["1.02"], "say": "Por un lado, Gemini: el modelo de IA generativa. Por otro, la app de Gemini: una de las apps creadas con él." },
+        { "kind": "list", "seconds": 9.5, "accent": "yellow", "title": "Qué gana una empresa", "points": ["Decidir con mejor información", "Más eficiencia y productividad", "Ideas nuevas y menos costos"], "from": ["1.02"] },
+        { "kind": "example", "seconds": 6, "accent": "orange", "art": "1.1-b", "artAlt": "Un escritorio de papel con un portátil, tarjetas con imágenes y un gráfico de barras que sube.", "lines": ["Marketing crea posts con imágenes", "de marca, textos y horarios."], "from": ["1.02"], "say": "El equipo de marketing crea posts con imágenes de marca, textos y horarios." },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "Una tecnología, muchas aplicaciones." }
+      ]
+    },
+    {
+      "unitId": "1.2",
+      "title": "Un modelo, mil tareas",
+      "scenes": [
+        { "kind": "hook", "seconds": 5.5, "accent": "orange", "title": "Un modelo, mil tareas", "line": "Modelos de base e instrucciones" },
+        { "kind": "concept", "seconds": 6, "accent": "blue", "art": "1.2-a", "artAlt": "Un embudo de papel vierte libros, fotos y ondas de sonido dentro de un gran cubo.", "lines": ["Un modelo de base aprende de", "datos enormes y muy variados."], "from": ["1.03"] },
+        { "kind": "versus", "seconds": 8.5, "accent": "orange", "a": { "term": "Modelo de base", "line": "Sirve para muchas tareas" }, "b": { "term": "Modelo tradicional", "line": "Se entrena para una sola" }, "from": ["1.03"], "say": "Por un lado, el modelo de base: sirve para muchas tareas. Por otro, el modelo tradicional: se entrena para una sola." },
+        { "kind": "list", "seconds": 8.5, "accent": "yellow", "title": "Instrucción: lo que pides", "points": ["De texto a imagen", "De audio a resumen", "De errores a código limpio"], "from": ["1.04"], "say": "Una instrucción es lo que pides: de texto a imagen, de audio a resumen y de errores a código limpio." },
+        { "kind": "example", "seconds": 6, "accent": "blue", "art": "1.2-b", "artAlt": "Una zapatilla de papel en un pequeño set de fotos con tres fondos de colores y una cámara.", "lines": ["Una marca deportiva crea fotos", "de producto con el modelo Imagen."], "from": ["1.03"] },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "Una buena instrucción lo cambia todo." }
+      ]
+    },
+    {
+      "unitId": "1.3",
+      "title": "Estrategia con IA",
+      "scenes": [
+        { "kind": "hook", "seconds": 5.5, "accent": "blue", "title": "Estrategia con IA", "line": "Un plan, y las personas al frente" },
+        { "kind": "concept", "seconds": 6.5, "accent": "orange", "art": "1.3-a", "artAlt": "Una escalera de papel con una flecha que baja desde una bandera y otra que sube desde tres bombillas.", "lines": ["La visión baja desde la dirección", "y las ideas suben desde los equipos."], "from": ["1.06"] },
+        { "kind": "versus", "seconds": 10, "accent": "blue", "a": { "term": "Automatizar", "line": "La IA hace la tarea repetitiva" }, "b": { "term": "Potenciar", "line": "La persona decide con ayuda de IA" }, "from": ["1.07"], "say": "Por un lado, automatizar: la IA hace la tarea repetitiva. Por otro, potenciar: la persona decide con ayuda de la IA." },
+        { "kind": "list", "seconds": 9, "accent": "yellow", "title": "Tres claves del plan", "points": ["Aprovecha lo que ya existe", "Empieza por un área de impacto", "Capacita a personas y equipos"], "from": ["1.05", "1.06", "1.07"] },
+        { "kind": "example", "seconds": 6, "accent": "orange", "art": "1.3-b", "artAlt": "Una tira de película de papel con barras de subtítulos y una lupa que revisa una de ellas.", "lines": ["Subtítulos generados con IA y", "revisados después por personas."], "from": ["1.07"] },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "La IA suma; las personas deciden." }
+      ]
+    },
+    {
+      "unitId": "2.1",
+      "title": "IA, AA e IA generativa",
+      "scenes": [
+        { "kind": "hook", "seconds": 6, "accent": "blue", "title": "IA, AA e IA generativa", "line": "Los conceptos de base", "say": "La base: IA, aprendizaje automático e IA generativa." },
+        { "kind": "concept", "seconds": 8, "accent": "orange", "art": "2.1-a", "artAlt": "Tres anillos de papel, uno dentro de otro, con un engranaje, un gráfico y un pincel.", "lines": ["La IA abarca todo; el AA es su método", "y la IA generativa crea contenido."], "from": ["2.02"] },
+        { "kind": "versus", "seconds": 8, "accent": "blue", "a": { "term": "Estructurados", "line": "En tablas, fáciles de buscar" }, "b": { "term": "No estructurados", "line": "Texto libre, fotos, correos" }, "from": ["2.04"], "say": "Los datos estructurados van en tablas; los no estructurados son texto libre, fotos y correos." },
+        { "kind": "list", "seconds": 9, "accent": "yellow", "title": "Tres formas de aprender", "points": ["Supervisado: con etiquetas", "No supervisado: sin ellas", "Por refuerzo: prueba y error"], "from": ["2.05"], "say": "Hay tres formas de aprender: supervisado con etiquetas, no supervisado sin ellas y por refuerzo, a prueba y error." },
+        { "kind": "example", "seconds": 7.5, "accent": "orange", "art": "2.1-b", "artAlt": "Un refrigerador de papel abierto con un cartón de leche, una etiqueta y ondas de olor.", "lines": ["Fecha y olor predicen si la leche", "sigue buena. Así trabaja el AA."], "from": ["2.03"] },
+        { "kind": "cta", "seconds": 3.5, "accent": "yellow", "line": "Buenos datos, mejores modelos." }
+      ]
+    },
+    {
+      "unitId": "2.2",
+      "title": "Modelos de base",
+      "scenes": [
+        { "kind": "hook", "seconds": 5, "accent": "orange", "title": "Modelos de base", "line": "Qué pueden hacer y dónde fallan", "say": "Los modelos de base: qué pueden hacer y dónde fallan." },
+        { "kind": "concept", "seconds": 6, "accent": "blue", "art": "2.2-a", "artAlt": "Una estantería de papel llena de libros cuyas páginas vuelan hacia una gran bombilla.", "lines": ["Un modelo de base es como alguien", "que leyó una biblioteca entera."], "from": ["2.07"] },
+        { "kind": "versus", "seconds": 9.5, "accent": "orange", "a": { "term": "Alucinación", "line": "Inventa algo que no es real" }, "b": { "term": "Fecha límite", "line": "No sabe lo más reciente" }, "from": ["2.09"] },
+        { "kind": "list", "seconds": 10.5, "accent": "yellow", "title": "Para respuestas fiables", "points": ["Fundamentar con datos (RAG)", "Escribir mejores instrucciones", "Ajustar y revisar con personas"], "from": ["2.10"] },
+        { "kind": "example", "seconds": 7.5, "accent": "blue", "art": "2.2-b", "artAlt": "Un banco de trabajo de papel con un cuadro, un rollo de película y un chip pequeño.", "lines": ["Para imágenes, Imagen; para video,", "Veo; y ligera y local, Gemma."], "from": ["2.08"], "say": "Para imágenes está Imagen; para video, Veo; y Gemma es ligera y local." },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "Elige el modelo según la tarea." }
+      ]
+    },
+    {
+      "unitId": "2.3",
+      "title": "IA segura y responsable",
+      "scenes": [
+        { "kind": "hook", "seconds": 6, "accent": "blue", "title": "IA segura y responsable", "line": "Proteger tus apps y a las personas", "say": "Una IA segura y responsable. Proteger tus apps y a las personas." },
+        { "kind": "concept", "seconds": 6, "accent": "orange", "art": "2.3-a", "artAlt": "Un escudo de papel protege una base de datos, un servidor y un teléfono unidos por una cadena.", "lines": ["La seguridad cubre todo el ciclo:", "datos, infraestructura y uso."], "from": ["2.11"] },
+        { "kind": "versus", "seconds": 11, "accent": "blue", "a": { "term": "IA segura", "line": "Evita ataques a tus aplicaciones" }, "b": { "term": "IA responsable", "line": "Evita que tus apps causen daño" }, "from": ["2.11", "2.12"], "say": "Por un lado, la IA segura: evita ataques a tus aplicaciones. Por otro, la IA responsable: evita que tus apps causen daño." },
+        { "kind": "list", "seconds": 8.5, "accent": "yellow", "title": "Tres riesgos de seguridad", "points": ["Envenenamiento de datos", "Robo de modelos", "Inyección de instrucciones"], "from": ["2.11"] },
+        { "kind": "example", "seconds": 6, "accent": "orange", "art": "2.3-b", "artAlt": "Una máquina de papel clasifica hojas: una bandeja rebosa y la otra queda casi vacía.", "lines": ["Un filtro de currículums prefiere", "a un grupo por datos con sesgo."], "from": ["2.12"] },
+        { "kind": "cta", "seconds": 4.5, "accent": "yellow", "line": "Sin seguridad no hay IA responsable." }
+      ]
+    },
+    {
+      "unitId": "3.1",
+      "title": "Las cinco capas",
+      "scenes": [
+        { "kind": "hook", "seconds": 5, "accent": "orange", "title": "Las cinco capas", "line": "Lo que hay debajo de cada app de IA" },
+        { "kind": "concept", "seconds": 6, "accent": "blue", "art": "3.1-a", "artAlt": "Un iceberg de papel: una punta pequeña sobre el agua y cuatro capas grandes debajo.", "lines": ["La app que ves es solo la punta:", "debajo hay cuatro capas más."], "from": ["3.01"] },
+        { "kind": "versus", "seconds": 9.5, "accent": "orange", "a": { "term": "Modelo", "line": "El cerebro: genera y razona" }, "b": { "term": "Agente", "line": "Usa el modelo y además actúa" }, "from": ["3.02"], "say": "Por un lado, el modelo: es el cerebro, genera y razona. Por otro, el agente: usa el modelo y además actúa." },
+        { "kind": "list", "seconds": 9.5, "accent": "yellow", "title": "De abajo hacia arriba", "points": ["Infraestructura y modelos", "Plataforma que los une", "Agentes y aplicaciones"], "from": ["3.02"] },
+        { "kind": "example", "seconds": 7, "accent": "blue", "art": "3.1-b", "artAlt": "Un coche de papel con un pequeño robot al volante avanza por una carretera sobre un bloque firme.", "lines": ["En un viaje, la app es el vehículo", "y el agente, quien lo conduce."], "from": ["3.02"] },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "Entiende las capas y decide mejor." }
+      ]
+    },
+    {
+      "unitId": "3.2",
+      "title": "Agentes de IA",
+      "scenes": [
+        { "kind": "hook", "seconds": 5.5, "accent": "blue", "title": "Agentes de IA", "line": "Observan, razonan y actúan" },
+        { "kind": "concept", "seconds": 6, "accent": "orange", "art": "3.2-a", "artAlt": "Un robot de papel avanza hacia una diana junto a una caja con llave inglesa, lupa y llave.", "lines": ["Un agente persigue un objetivo con", "las herramientas a su alcance."], "from": ["3.03"] },
+        { "kind": "versus", "seconds": 10.5, "accent": "blue", "a": { "term": "Conversacional", "line": "Le escribes o hablas y responde" }, "b": { "term": "Flujo de trabajo", "line": "Le das una tarea y la completa" }, "from": ["3.04"], "say": "Por un lado, el agente conversacional: le escribes o hablas y responde. Por otro, el de flujo de trabajo: le das una tarea y la completa." },
+        { "kind": "list", "seconds": 10, "accent": "yellow", "title": "El bucle de razonamiento", "points": ["Observa la tarea y el entorno", "Interpreta y planifica", "Actúa y se adapta al resultado"], "from": ["3.05"] },
+        { "kind": "example", "seconds": 6, "accent": "orange", "art": "3.2-b", "artAlt": "Dos robots de papel en un mostrador: uno sostiene un avión y el otro un mapa con un marcador.", "lines": ["En una app de viajes, un agente", "busca vuelos y otro sugiere planes."], "from": ["3.03"] },
+        { "kind": "cta", "seconds": 3.5, "accent": "yellow", "line": "Modelo, bucle y herramientas." }
+      ]
+    },
+    {
+      "unitId": "3.3",
+      "title": "Plataforma y cimientos",
+      "scenes": [
+        { "kind": "hook", "seconds": 6.5, "accent": "orange", "title": "Plataforma y cimientos", "line": "Dónde se crean y corren los modelos" },
+        { "kind": "concept", "seconds": 7.5, "accent": "blue", "art": "3.3-a", "artAlt": "Una gran mesa de papel reúne engranajes, una base de datos y herramientas unidas a un centro.", "lines": ["Agent Platform (antes Vertex AI)", "une modelos, datos y herramientas."], "from": ["3.06"], "say": "La plataforma Agent Platform, antes Vertex AI, une modelos, datos y herramientas." },
+        { "kind": "versus", "seconds": 7.5, "accent": "orange", "a": { "term": "Model Garden", "line": "Usa modelos que ya existen" }, "b": { "term": "AutoML", "line": "Crea el tuyo con poca técnica" }, "from": ["3.07"], "say": "Con Model Garden usas modelos que ya existen y con AutoML creas el tuyo con poca técnica." },
+        { "kind": "list", "seconds": 9.5, "accent": "yellow", "title": "Tres capas, una base", "points": ["Infraestructura: GPU y TPU", "Modelos: existentes o propios", "Plataforma: los une y los opera"], "from": ["3.06", "3.07", "3.09"], "say": "Son tres capas: la infraestructura con sus chips, los modelos existentes o propios y la plataforma que los une y los opera." },
+        { "kind": "example", "seconds": 8, "accent": "blue", "art": "3.3-b", "artAlt": "Una turbina de papel en 3D, una lupa que saca etiquetas y un globo de diálogo al lado.", "lines": ["AutoML extrae datos de planos 3D", "y Gemini los explica con claridad."], "from": ["3.08"], "say": "Con AutoML se extraen datos de planos 3D, y Gemini los explica con claridad." },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "Elige la pieza según tu necesidad." }
+      ]
+    },
+    {
+      "unitId": "3.4",
+      "title": "Elige tu solución",
+      "scenes": [
+        { "kind": "hook", "seconds": 5, "accent": "blue", "title": "Elige tu solución", "line": "Según necesidades, costo y tiempo" },
+        { "kind": "concept", "seconds": 6, "accent": "orange", "art": "3.4-a", "artAlt": "Una balanza de papel: una caja lista en un lado y una máquina a medida en el otro, con monedas y un reloj de arena.", "lines": ["Cuanto más personalizada, más", "tiempo, personas y dinero pide."], "from": ["3.11"] },
+        { "kind": "versus", "seconds": 10, "accent": "blue", "a": { "term": "En la nube", "line": "Mucha potencia, con latencia" }, "b": { "term": "En el perímetro", "line": "Rápido, privado y sin conexión" }, "from": ["3.10"], "say": "Por un lado, en la nube: mucha potencia, con latencia. Por otro, en el perímetro: rápido, privado y sin conexión." },
+        { "kind": "list", "seconds": 10.5, "accent": "yellow", "title": "Evalúa antes de empezar", "points": ["Escala: ¿uno o millones?", "Personalización: ¿cuánta?", "Exactitud: ¿cuánto error?"], "from": ["3.12"] },
+        { "kind": "example", "seconds": 7, "accent": "orange", "art": "3.4-b", "artAlt": "Un megáfono de papel y un enchufe conectado a una caja que entrega tarjetas con imágenes.", "lines": ["Campaña con poco tiempo: usa una", "API ya entrenada, no un modelo nuevo."], "from": ["3.12"] },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "Planifica también el mantenimiento." }
+      ]
+    },
+    {
+      "unitId": "4.1",
+      "title": "IA en tu día a día",
+      "scenes": [
+        { "kind": "hook", "seconds": 6.5, "accent": "orange", "title": "IA en tu día a día", "line": "Gemini en tus apps de trabajo", "say": "La inteligencia artificial en tu día a día, con Gemini en tus apps de trabajo." },
+        { "kind": "concept", "seconds": 6.5, "accent": "blue", "art": "4.1-a", "artAlt": "Un portátil de papel con ventanas de documento, hoja de cálculo y diapositiva, cada una con una estrella.", "lines": ["Gemini para Google Workspace te", "ayuda a escribir, buscar y resumir."], "from": ["4.02"], "say": "En Google Workspace, Gemini te ayuda a escribir, buscar y resumir." },
+        { "kind": "versus", "seconds": 9.5, "accent": "orange", "a": { "term": "Sin ejemplos", "line": "El modelo usa lo que ya sabe" }, "b": { "term": "Con ejemplos", "line": "Le muestras uno o varios casos" }, "from": ["4.03"], "say": "Por un lado, sin ejemplos: el modelo usa lo que ya sabe. Por otro, con ejemplos: le muestras uno o varios casos." },
+        { "kind": "list", "seconds": 10.5, "accent": "yellow", "title": "Gemini en tus apps", "points": ["Documentos: redacta y reformula", "Drive: busca y cita la fuente", "Presentaciones: crea imágenes"], "from": ["4.02"], "say": "Así ayuda Gemini en tus apps: en Documentos redacta y reformula, en Drive busca y cita la fuente, y en Presentaciones crea imágenes." },
+        { "kind": "example", "seconds": 7, "accent": "blue", "art": "4.1-b", "artAlt": "Un mostrador de papel con un paquete de muestra y una fila de paquetes que se clasifican en dos cajas.", "lines": ["Con un ejemplo sobre envíos, el", "modelo etiqueta preguntas parecidas."], "from": ["4.03"] },
+        { "kind": "cta", "seconds": 3.5, "accent": "yellow", "line": "Se aprende mejor probándola." }
+      ]
+    },
+    {
+      "unitId": "4.2",
+      "title": "Reutiliza y fundamenta",
+      "scenes": [
+        { "kind": "hook", "seconds": 7, "accent": "blue", "title": "Reutiliza y fundamenta", "line": "Gems, RAG y Gemini Notebook", "say": "Aprende a reutilizar y a fundamentar, con Gems, RAG y Gemini Notebook." },
+        { "kind": "concept", "seconds": 6.5, "accent": "orange", "art": "4.2-a", "artAlt": "Un globo de diálogo de papel unido con hilos a tres documentos con sello de verificación.", "lines": ["Fundamentar es conectar la respuesta", "con fuentes que puedes verificar."], "from": ["4.05"] },
+        { "kind": "versus", "seconds": 9, "accent": "blue", "a": { "term": "Fundamentación", "line": "La idea: apoyarse en fuentes" }, "b": { "term": "RAG", "line": "Una técnica: recupera y agrega" }, "from": ["4.05"], "say": "La fundamentación es la idea: apoyarse en fuentes. La RAG es una técnica: recupera y agrega." },
+        { "kind": "list", "seconds": 8, "accent": "yellow", "title": "Para no repetirte", "points": ["Plantillas: texto listo", "Encadenar: sigue el chat", "Gems: asistentes a medida"], "from": ["4.04"], "say": "Para no repetirte: plantillas con texto listo, encadenar para seguir el chat, y Gems, asistentes a medida." },
+        { "kind": "example", "seconds": 7.5, "accent": "orange", "art": "4.2-b", "artAlt": "Un cuaderno de papel abierto recibe documentos, una onda de audio y un eslabón de enlace.", "lines": ["Gemini Notebook (antes NotebookLM)", "responde solo con lo que subes."], "from": ["4.06"], "say": "El cuaderno Gemini Notebook, antes NotebookLM, responde solo con lo que subes." },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "Mejores fuentes, mejores respuestas." }
+      ]
+    },
+    {
+      "unitId": "4.3",
+      "title": "Gemini en Google Cloud",
+      "scenes": [
+        { "kind": "hook", "seconds": 5.5, "accent": "orange", "title": "Gemini en Google Cloud", "line": "IA para equipos técnicos", "say": "La IA de Gemini en Google Cloud. Para equipos técnicos." },
+        { "kind": "concept", "seconds": 6, "accent": "blue", "art": "4.3-a", "artAlt": "Una nube de papel con una caja de herramientas: una llave, una ventana de código y un gráfico.", "lines": ["Un paquete de herramientas con IA", "integrado en Google Cloud."], "from": ["4.07"] },
+        { "kind": "versus", "seconds": 9.5, "accent": "orange", "a": { "term": "Code Assist", "line": "Ayuda a escribir código" }, "b": { "term": "Cloud Assist", "line": "Ayuda a operar apps en la nube" }, "from": ["4.07"] },
+        { "kind": "list", "seconds": 12.5, "accent": "yellow", "title": "Gemini para tus datos", "points": ["BigQuery: consultas sin saber SQL", "Looker: gráficos e informes", "Colab Enterprise: código Python"], "from": ["4.07"], "say": "También ayuda con tus datos: consultas en BigQuery sin saber SQL, gráficos e informes en Looker y código Python en Colab Enterprise." },
+        { "kind": "example", "seconds": 6, "accent": "blue", "art": "4.3-b", "artAlt": "Una tienda de papel junto a una base de datos, un globo de diálogo y un gráfico que sale de ella.", "lines": ["Una cadena de tiendas pregunta a", "sus datos en lenguaje natural."], "from": ["4.07"] },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "Tus datos siguen siendo privados." }
+      ]
+    },
+    {
+      "unitId": "5.1",
+      "title": "Agentes modernos",
+      "scenes": [
+        { "kind": "hook", "seconds": 4.5, "accent": "blue", "title": "Agentes modernos", "line": "De seguir rutas a entender", "say": "Los agentes modernos: de seguir rutas a entender." },
+        { "kind": "concept", "seconds": 6, "accent": "orange", "art": "5.1-a", "artAlt": "Un robot de papel conecta cables a una base de datos, un sobre y una carpeta, con bloques listos al lado.", "lines": ["Un agente a medida se conecta a", "tus sistemas sin partir de cero."], "from": ["5.01"] },
+        { "kind": "versus", "seconds": 10.5, "accent": "blue", "a": { "term": "Determinístico", "line": "Rutas fijas, mismo resultado" }, "b": { "term": "Generativo", "line": "Entiende la intención y varía" }, "from": ["5.02"], "say": "Por un lado, el agente determinístico: rutas fijas, mismo resultado. Por otro, el generativo: entiende la intención y varía." },
+        { "kind": "list", "seconds": 10, "accent": "yellow", "title": "Cómo evolucionaron", "points": ["Antes: rutas predefinidas", "Luego: entienden la intención", "Con RAG: información al día"], "from": ["5.02"], "say": "Cómo evolucionaron: antes seguían rutas predefinidas, luego entendieron la intención y, con RAG, usan información al día." },
+        { "kind": "example", "seconds": 7.5, "accent": "orange", "art": "5.1-b", "artAlt": "Un teléfono antiguo de papel con teclado y cable enredado junto a un pequeño robot.", "lines": ["«Presiona 1 para citas»: un agente", "fijo que falla ante lo inesperado."], "from": ["5.02"], "say": "Presiona uno para citas: así habla un agente fijo, que falla ante lo inesperado." },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "Del guion fijo a la comprensión." }
+      ]
+    },
+    {
+      "unitId": "5.2",
+      "title": "Construye tu agente",
+      "scenes": [
+        { "kind": "hook", "seconds": 5, "accent": "orange", "title": "Construye tu agente", "line": "Las piezas, una por una" },
+        { "kind": "concept", "seconds": 6.5, "accent": "blue", "art": "5.2-a", "artAlt": "Un puente de papel une a un robot con edificios, una base de datos y una nube.", "lines": ["Las herramientas conectan al agente", "con sistemas y datos del mundo real."], "from": ["5.05"] },
+        { "kind": "versus", "seconds": 9.5, "accent": "orange", "a": { "term": "Google AI Studio", "line": "Para prototipos rápidos" }, "b": { "term": "Agent Studio", "line": "Para escala empresarial" }, "from": ["5.03", "5.06"] },
+        { "kind": "list", "seconds": 12.5, "accent": "yellow", "title": "Piezas de un agente", "points": ["Modelo: el cerebro", "Bucle: razona (ReAct, CoT)", "Herramientas: actúan fuera"], "from": ["5.03", "5.04", "5.05"], "say": "Piezas de un agente. El modelo: es el cerebro. El bucle: razona con ReAct o con cadena de pensamientos. Las herramientas: actúan fuera." },
+        { "kind": "example", "seconds": 6, "accent": "blue", "art": "5.2-b", "artAlt": "Un robot de papel con una regadera coloca un marcador en un calendario junto a unas plantas.", "lines": ["Para agendar una cita, el agente", "usa una herramienta de calendario."], "from": ["5.05"] },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "Cada pieza hace mejor al agente." }
+      ]
+    },
+    {
+      "unitId": "5.3",
+      "title": "Agentes y clientes",
+      "scenes": [
+        { "kind": "hook", "seconds": 5.5, "accent": "blue", "title": "Agentes y clientes", "line": "Buscar, conversar y resolver" },
+        { "kind": "concept", "seconds": 6.5, "accent": "orange", "art": "5.3-a", "artAlt": "Una gran lupa de papel sobre un perchero resalta una chaqueta con una etiqueta en forma de corazón.", "lines": ["Una buena búsqueda capta tu intención,", "no solo las palabras que escribes."], "from": ["5.08"] },
+        { "kind": "versus", "seconds": 10, "accent": "blue", "a": { "term": "Agent Search", "line": "Busca en tu sitio o tu app" }, "b": { "term": "Gemini Enterprise", "line": "Asistente para empleados" }, "from": ["5.08", "5.11"] },
+        { "kind": "list", "seconds": 10.5, "accent": "yellow", "title": "Quién hace qué", "points": ["Agentes conversacionales: atienden", "Agent Assist: apoya al humano", "Conversational Insights: analiza"], "from": ["5.09"], "say": "Quién hace qué. Los agentes conversacionales atienden. Con Agent Assist se apoya al humano. Y Conversational Insights analiza." },
+        { "kind": "example", "seconds": 6, "accent": "orange", "art": "5.3-b", "artAlt": "Un escritorio de papel con una pila de formularios, unos auriculares y un sol y una luna encima.", "lines": ["En temporada de impuestos, un agente", "atiende consultas las 24 horas."], "from": ["5.09"] },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "Menos espera, mejores respuestas." }
+      ]
+    },
+    {
+      "unitId": "5.4",
+      "title": "Planifica el cambio",
+      "scenes": [
+        { "kind": "hook", "seconds": 5, "accent": "orange", "title": "Planifica el cambio", "line": "La IA generativa no se detiene" },
+        { "kind": "concept", "seconds": 6, "accent": "blue", "art": "5.4-a", "artAlt": "Una brújula de papel sobre un mapa con un camino sinuoso que termina en una bandera.", "lines": ["Una visión clara y la agilidad", "para adaptarla cuando haga falta."], "from": ["5.12"] },
+        { "kind": "versus", "seconds": 10.5, "accent": "orange", "a": { "term": "Capacidades", "line": "Habilidades y cultura de aprender" }, "b": { "term": "Organización", "line": "Flujos, roles y mentalidades" }, "from": ["5.12"], "say": "Por un lado, las capacidades: habilidades y cultura de aprender. Por otro, la organización: flujos, roles y mentalidades." },
+        { "kind": "list", "seconds": 10, "accent": "yellow", "title": "Pasos del plan", "points": ["Fija una visión con apoyo", "Prioriza casos de alto impacto", "Mide, demuestra valor e itera"], "from": ["5.12"] },
+        { "kind": "example", "seconds": 6, "accent": "blue", "art": "5.4-b", "artAlt": "Dos gráficos de barras de papel, uno bajo y otro alto, con un robot de chat entre ambos.", "lines": ["Compara la satisfacción del cliente", "antes y después del chatbot."], "from": ["5.12"] },
+        { "kind": "cta", "seconds": 4, "accent": "yellow", "line": "Aprende, mide y vuelve a ajustar." }
       ]
     }
   ]

@@ -75,6 +75,16 @@ function localDate(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
+// Counts today as a study day. Practice that keeps no answers (cards, yes or no) calls it directly.
+export function touchStreak(progress: Progress, now: Date = new Date()): Progress {
+  const today = localDate(now);
+  const lastDay = progress.streak.lastStudyDate;
+  if (lastDay !== null && today <= lastDay) return progress;
+  const previousDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+  const current = lastDay === localDate(previousDate) ? progress.streak.current + 1 : 1;
+  return { ...progress, streak: { current, best: Math.max(progress.streak.best, current), lastStudyDate: today } };
+}
+
 export function recordAnswer(progress: Progress, question: Question, selectedIds: string[], now: Date = new Date()): Progress {
   if (!validSelection(question, selectedIds)) throw new Error('La respuesta contiene opciones desconocidas o repetidas.');
   const session = progress.activeSession;
@@ -85,22 +95,13 @@ export function recordAnswer(progress: Progress, question: Question, selectedIds
   }
   const correct = isCorrect(question, selectedIds);
   const previous = progress.answers[question.id];
-  const today = localDate(now);
-  const lastDay = progress.streak.lastStudyDate;
-  let streak = { ...progress.streak };
-  if (lastDay === null || today > lastDay) {
-    const previousDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-    const current = lastDay === localDate(previousDate) ? progress.streak.current + 1 : 1;
-    streak = { current, best: Math.max(progress.streak.best, current), lastStudyDate: today };
-  }
   return {
-    ...progress,
+    ...touchStreak(progress, now),
     xp: progress.xp + (correct ? (previous?.correct ? 5 : 10) : 0),
     answers: { ...progress.answers, [question.id]: {
       attempts: (previous?.attempts ?? 0) + 1,
       correct: (previous?.correct ?? 0) + Number(correct), lastCorrect: correct, lastAnsweredAt: now.toISOString(),
     } },
-    streak,
     activeSession: session ? {
       ...session, stage: 'feedback', selectedIds: [...selectedIds],
       responses: [...session.responses, { questionId: question.id, selectedIds: [...selectedIds], correct }],

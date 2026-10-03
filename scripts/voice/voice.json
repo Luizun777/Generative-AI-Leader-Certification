@@ -1,0 +1,8 @@
+{
+  "id": "serena",
+  "instruct": "Speak like a warm, clear teacher explaining an idea, at a natural conversational pace.",
+  "speed": 1,
+  "tempo": 1.06,
+  "takes": 5,
+  "minScore": 0.93
+}

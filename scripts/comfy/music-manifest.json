@@ -1,0 +1,10 @@
+{
+  "seconds": 48,
+  "lyrics": "[instrumental]",
+  "use": "calma-b",
+  "tracks": [
+    { "id": "calma-a", "seed": 460101, "tags": "instrumental, lo-fi, soft felt piano, kalimba, warm bass, gentle brushed drums, calm, cozy, minimal, steady, 84 bpm" },
+    { "id": "calma-b", "seed": 460202, "tags": "instrumental, acoustic guitar fingerpicking, soft marimba, light shaker, warm, hopeful, simple melody, steady, 88 bpm" },
+    { "id": "calma-c", "seed": 460303, "tags": "instrumental, ambient, soft electric piano, mellow synth pad, slow, calm, spacious, minimal, steady, 76 bpm" }
+  ]
+}

@@ -1,0 +1,62 @@
+/* Screens that live outside App.tsx: the stepped lesson and the focus home. Loaded with their components. */
+.lesson-steps{display:flex;flex-direction:column;gap:14px}
+.step-track{display:flex;gap:6px}
+.step-track span{flex:1;height:6px;border-radius:99px;background:#e4e6e5}
+.step-track span.done{background:var(--blue)}
+.step-count{margin:0;font-size:.9375rem;font-weight:750;color:var(--muted)}
+/* The card keeps its height from step to step, so the buttons below never move. */
+.step-card{min-height:17rem;display:flex;flex-direction:column;gap:12px}
+.step-card h2{margin:0;font-size:1.25rem}
+.step-card h3{margin:0;font-size:1.15rem}
+.step-card .markdown{font-size:1.125rem;line-height:1.7;max-width:62ch}
+.step-card .markdown p:last-child{margin-bottom:0}
+.step-card ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:10px}
+.step-note{margin:8px 0 0;font-weight:650}
+.step-actions{display:grid;grid-template-columns:1fr 2fr;gap:12px}
+.lesson-steps>.text-button,.lesson-content>.text-button{align-self:flex-start}
+
+.focus-home{max-width:640px}
+.focus-home .focus-context{margin:0 0 8px;font-size:.9375rem;font-weight:750;color:var(--muted)}
+.focus-home h2{margin-bottom:10px}
+.focus-home .focus-size{margin:0 0 22px;font-size:1.0625rem}
+.focus-home .button{width:100%}
+.route-details{margin-top:26px}
+.route-details>summary{cursor:pointer;font-weight:750;min-height:48px;display:flex;align-items:center;gap:8px;color:var(--blue)}
+.route-details[open]>summary{margin-bottom:18px}
+
+/* Practice rounds that keep no session: «¿Sí o no?» and the memory cards. */
+.mode-switch{max-width:560px;margin-bottom:22px}
+.round-intro,.round,.round-done{max-width:680px}
+.round-intro h2,.round-done h2{margin-bottom:10px}
+.round-intro .button{width:100%}
+.round-counts{margin:0;font-weight:750;color:var(--muted)}
+.round{display:flex;flex-direction:column;gap:16px}
+.round-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.round-top .text-button{padding:0;font-size:.9375rem}
+.round-top .step-count:focus{outline:none}
+.round-prompt{font-size:1.0625rem;font-weight:650}
+.proposed{padding:16px 18px;border:1.5px solid var(--blue);border-radius:13px;background:#eef1ff}
+.proposed-label{display:block;margin-bottom:6px;font-size:.9375rem;font-weight:750;color:#2845bb}
+.round-question{margin:6px 0 0;font-size:1.25rem}
+.round-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.round .answer-feedback{margin-top:0}
+.round .answer-feedback h2{margin-bottom:8px;font-size:1.35rem}
+.round-answer{margin:0 0 12px}
+.round-score{font-size:1.125rem;font-weight:750}
+.round-done h3{margin:22px 0 10px;font-size:1.1rem}
+.round-misses{list-style:none;padding:0;margin:0 0 24px;display:grid;gap:12px}
+.round-misses li{padding:14px 16px;border:1px solid #d6d9d3;border-radius:12px;background:#fffefb}
+.round-misses li p{margin:6px 0 0}
+/* The card keeps its height on both sides, so turning it moves nothing around it. */
+.flashcard{min-height:15rem;display:flex;flex-direction:column;gap:12px;padding:22px;border:1.5px solid #c8ced9;border-radius:16px;background:#f9f9f3}
+.flashcard.is-turned{border-color:var(--blue);background:#eef1ff}
+.flashcard h2{margin:0;font-size:1.5rem}
+.flashcard-hint{margin:auto 0 0;color:var(--muted)}
+.flashcard-definition{margin:0;font-size:1.125rem;line-height:1.7}
+.flashcard-facts{margin:auto 0 0;display:grid;gap:6px;font-size:.9375rem}
+.flashcard-facts div{display:flex;flex-wrap:wrap;gap:6px}
+.flashcard-facts dt{font-weight:750;color:var(--muted)}
+.flashcard-facts dt::after{content:":"}
+.flashcard-facts dd{margin:0}
+.round-turn{width:100%}
+@media(max-width:420px){.round-actions{grid-template-columns:1fr}.mode-switch button{padding:10px 4px;font-size:.9375rem}}

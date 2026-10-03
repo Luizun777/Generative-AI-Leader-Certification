@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Curriculum, Progress, Question } from '../src/types';
-import { completeLesson, isCorrect, makeBackup, newProgress, parseBackup, recordAnswer, selectQuestions, shuffle, startSession, validateProgress } from '../src/lib/engine';
+import { completeLesson, isCorrect, makeBackup, newProgress, parseBackup, recordAnswer, selectQuestions, shuffle, startSession, touchStreak, validateProgress } from '../src/lib/engine';
 
 const question = (id: string, overrides: Partial<Question> = {}): Question => ({
   id, unitId: 'u1', lessonIds: ['l1'], kind: 'single', prompt: id,
@@ -107,6 +107,16 @@ test('local-date streak updates on answers, once a day, across midnight and miss
   assert.equal(progress.streak.lastStudyDate, '2026-10-04');
 });
 
+test('practice that records no answer still counts the day, once, and changes nothing else', () => {
+  const first = touchStreak(fresh(), date(1));
+  assert.deepEqual(first.streak, { current: 1, best: 1, lastStudyDate: '2026-10-01' });
+  assert.equal(touchStreak(first, date(1, 23)), first);
+  const next = touchStreak(first, date(2, 0));
+  assert.deepEqual(next.streak, { current: 2, best: 2, lastStudyDate: '2026-10-02' });
+  assert.deepEqual({ ...next, streak: null }, { ...fresh(), streak: null });
+  assert.deepEqual(validateProgress(JSON.parse(JSON.stringify(next)), curriculum), next);
+});
+
 test('lesson completion is idempotent and does not alter XP or streak', () => {
   const first = completeLesson(fresh(), 'l1');
   const second = completeLesson(first, 'l1');
@@ -125,6 +135,18 @@ test('backups round-trip all session stages, selections, settings, and matching 
   assert.deepEqual(validateProgress(progress, curriculum), progress);
   progress = { ...progress, activeSession: { ...progress.activeSession!, stage: 'results', index: 1, selectedIds: [] } };
   assert.deepEqual(validateProgress(progress, curriculum), progress);
+});
+
+// Release 1.0.1 validates backups against these exact keys and rejects anything else,
+// so device-only data must live in its own storage key instead of growing Progress.
+test('progress, session and backup keep the exact keys that release 1.0.1 accepts', () => {
+  const progress = { ...fresh(), activeSession: startSession('lesson', [practice[0]], 'l1', date(1)) };
+  assert.deepEqual(Object.keys(progress).sort(), ['activeSession', 'answers', 'completedLessons', 'completedMatching', 'contentVersion', 'schemaVersion', 'settings', 'streak', 'xp']);
+  assert.deepEqual(Object.keys(progress.settings), ['reducedMotion']);
+  assert.deepEqual(Object.keys(progress.streak).sort(), ['best', 'current', 'lastStudyDate']);
+  assert.deepEqual(Object.keys(progress.activeSession).sort(), ['id', 'index', 'lessonId', 'mode', 'questionIds', 'responses', 'selectedIds', 'stage', 'startedAt']);
+  assert.deepEqual(Object.keys(makeBackup(progress)).sort(), ['app', 'exportedAt', 'progress', 'schemaVersion']);
+  for (const key of ['focus', 'sound', 'muted']) assert.throws(() => validateProgress({ ...progress, settings: { ...progress.settings, [key]: true } }, curriculum), /campos desconocidos/);
 });
 
 test('corrupt backups reject wrong versions, IDs, counters, dates, fields and inconsistent sessions', () => {

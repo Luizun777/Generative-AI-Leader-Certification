@@ -1,0 +1,77 @@
+{
+  "1.03": {
+    "point4": {"text": "Chirp es un modelo entrenado con un gran conjunto de datos de audio en varios idiomas. Permite el reconocimiento de voz, en tareas como asistentes de voz, transcripción y traducción.", "source": "TEMARIO.md:898"},
+    "dist1": {"text": "Propósito. El modelo de base es de uso general: se adapta a una amplia variedad de tareas. El modelo tradicional de AA suele diseñarse para tareas específicas.", "source": "TEMARIO.md:916"},
+    "dist2": {"text": "Datos de entrenamiento. El modelo de base se entrena con enormes cantidades de datos diversos. El modelo tradicional de AA se entrena con conjuntos de datos más pequeños y específicos.", "source": "TEMARIO.md:917"}
+  },
+  "1.04": {
+    "point3": {"text": "Si la entrada (instrucción) es un código de muestra con errores, el resultado es el código corregido sin errores.", "source": "TEMARIO.md:938"}
+  },
+  "1.06": {
+    "point3": {"text": "Enfoque estratégico para ejecutivos y gerencia de alto nivel: concentrarse en un área específica de impacto significativo y, tras lograr el éxito, expandirse a otras áreas. Esto maximiza el aprendizaje y la escalabilidad y garantiza un valor comercial tangible.", "source": "TEMARIO.md:1242"}
+  },
+  "1.07": {
+    "point1": {"text": "Pensamiento crítico y resolución de problemas. La IA generativa brinda información y datos. Sigue siendo humano interpretarlos y tomar decisiones fundamentadas.", "source": "TEMARIO.md:1292"},
+    "point2": {"text": "Innovación y creatividad. La IA generativa ayuda a generar ideas y explorar posibilidades. Sigue siendo humano el ingenio para superar los límites y desarrollar soluciones verdaderamente innovadoras.", "source": "TEMARIO.md:1293"}
+  },
+  "2.03": {
+    "point3": {"text": "Coherencia (consistency), factor de calidad. Las etiquetas o los formatos incoherentes confunden al modelo. Ejemplo de la lección: un rompecabezas con piezas etiquetadas con números y otras con letras.", "source": "TEMARIO.md:1669"}
+  },
+  "2.04": {
+    "point3": {"text": "Organización. Los datos estructurados están organizados y es fácil buscar y encontrar la información. Los datos no estructurados no tienen estructura predefinida y son complejos y desordenados por naturaleza.", "source": "TEMARIO.md:1710"},
+    "point4": {"text": "En Cymbal Cleaning son datos estructurados el ID de cliente, el nombre del cliente, los comentarios en una escala de 1 a 5 estrellas, la fecha de compra y el costo del pedido. Son datos no estructurados los comentarios en texto con formato libre, la imagen del producto y el contenido del correo electrónico.", "source": "TEMARIO.md:1713"}
+  },
+  "2.05": {
+    "point4": {"text": "Aprendizaje por refuerzo. Usa los datos que recopila al interactuar con el entorno y explorarlo, sin instrucciones explícitas ni etiquetas. Aprende por prueba y error: maximiza las recompensas y minimiza las penalizaciones.", "source": "TEMARIO.md:1749"}
+  },
+  "2.10": {
+    "point3": {"text": "Moderación de contenido. La HITL aporta una moderación precisa y contextualmente adecuada del contenido generado por usuarios: quita el material dañino o inapropiado que los algoritmos por sí solos podrían pasar por alto.", "source": "TEMARIO.md:2122"},
+    "dist1": {"text": "Definición. La RAG recupera información pertinente de bases de conocimiento externas y la agrega a la instrucción para mejorar los LLM. El ajuste es el entrenamiento adicional de un modelo entrenado previamente con un conjunto de datos nuevo para adaptarlo a una tarea o un dominio específicos.", "source": "TEMARIO.md:2140"},
+    "dist2": {"text": "Proceso. RAG: recuperar, agregar a la instrucción y generar. Ajuste: seleccionar un modelo entrenado previamente, recopilar datos, entrenar, evaluar y realizar ajustes. Fundamentación: dar acceso a las fuentes de datos y conectar los resultados con RAG o ajuste.", "source": "TEMARIO.md:2141"}
+  },
+  "3.02": {
+    "point1": {"text": "Aplicación potenciada por IA generativa. Esta capa es la parte para el usuario o frontend: lleva la IA a los usuarios a través de interfaces. En la analogía del motor, es el vehículo que nos lleva al destino.", "source": "TEMARIO.md:2691"},
+    "point2": {"text": "Agente. Esta capa usa el modelo para acciones más complejas: interactúa con el entorno, recopila información, decide y actúa. En la analogía del motor, es el conductor que decide y actúa.", "source": "TEMARIO.md:2692"},
+    "point3": {"text": "Infraestructura. Esta capa es la base que respalda todo: potencia de procesamiento, almacenamiento y conectividad para entrenar, implementar y escalar modelos. En la analogía del motor, es la base.", "source": "TEMARIO.md:2695"}
+  },
+  "3.03": {
+    "example": {"text": "App de reservas de viajes. Un agente busca los mejores vuelos y hoteles según las preferencias del usuario y otro sugiere actividades y atracciones en el destino. La aplicación aporta la interfaz para explorar opciones y hacer reservas.", "source": "TEMARIO.md:2882"}
+  },
+  "3.04": {
+    "point1": {"text": "Paso 1: proporcionas datos de entrada. Al agente conversacional le escribes un mensaje o le hablas. Al agente de flujo de trabajo le defines una tarea o le activas un proceso: enviar un formulario, subir un archivo, iniciar un evento programado o pedir un producto en línea.", "source": "TEMARIO.md:2900"},
+    "point2": {"text": "Paso 2: el agente entiende. El agente conversacional determina el significado y la intención detrás de tus palabras. El agente de flujo de trabajo es el software que automatiza los pasos: interpreta los requisitos de la tarea y define la serie de pasos necesarios.", "source": "TEMARIO.md:2901"}
+  },
+  "3.07": {
+    "point3": {"text": "Con datos de video, Agent Platform AutoML admite estos objetivos: reconocimiento de acciones, clasificación y seguimiento de objetos.", "source": "TEMARIO.md:3209"}
+  },
+  "3.10": {
+    "point1": {"text": "Motivo para ejecutar la IA en el perímetro: decidir en una fracción de segundo. Un vehículo autónomo o un dron que esquiva obstáculos no pueden esperar a que los datos viajen a la nube y regresen.", "source": "TEMARIO.md:3509"},
+    "point4": {"text": "Para la implementación perimetral, Agent Platform permite administrar y supervisar las implementaciones, seguir el rendimiento y recopilar estadísticas para mejorar los modelos.", "source": "TEMARIO.md:3520"},
+    "example": {"text": "Para un dispositivo médico que analiza datos del paciente en tiempo real durante una cirugía, la implementación es perimetral. Motivo: la latencia (latency) de la nube sería inaceptable.", "source": "TEMARIO.md:3531"}
+  },
+  "4.03": {
+    "point1": {"text": "Instrucción sin ejemplos (zero-shot prompting). Pides la tarea al modelo de base (foundation model) sin ejemplos previos y este solo usa su conocimiento existente. Regla: \"Solo dile lo que quieres\".", "source": "TEMARIO.md:3964"},
+    "point4": {"text": "Paso 5 del ejercicio de cadena de instrucciones: reflexionar y compartir la experiencia y los beneficios de la técnica.", "source": "TEMARIO.md:3976"}
+  },
+  "4.04": {
+    "point1": {"text": "Plantillas (prompt templates). Conservan instrucciones reutilizables guardadas en un documento o una hoja de cálculo de Google. Límite que señala la lección: hay formas más eficientes.", "source": "TEMARIO.md:4203"},
+    "point2": {"text": "Cadena de instrucciones (prompt chaining). Conserva el contexto del mismo hilo de conversación, y en Gemini puedes nombrar y fijar los chats. Límite que señala la lección: a veces solo quieres el contexto, no todo el historial.", "source": "TEMARIO.md:4204"},
+    "example": {"text": "Plantilla para un gerente de marketing, con la instrucción resumida: publicación llamativa para redes sociales [plataforma] que promocione [producto/servicio], destaque [características/beneficios principales] y agregue un llamado a la acción para [acción deseada].", "source": "TEMARIO.md:4225"}
+  },
+  "4.05": {
+    "point3": {"text": "Tras la instrucción del usuario. Sin RAG, el modelo responde sin conocimiento externo. Con RAG, se envía una consulta a un sistema de recuperación de backend (base de datos de vectores o motor de búsqueda) y la información pertinente se incorpora a la instrucción.", "source": "TEMARIO.md:4276"}
+  },
+  "5.02": {
+    "point2": {"text": "Agentes determinísticos (deterministic agents), la etapa más antigua. Componentes: bucle de razonamiento y herramientas, sin modelo de IA generativa de base. Rasgo principal: rutas y acciones predefinidas, y la misma entrada da siempre el mismo resultado.", "source": "TEMARIO.md:4791"}
+  },
+  "5.04": {
+    "point3": {"text": "ReAct es un framework de creación de instrucciones que permite que el modelo razone y tome medidas sobre una consulta del usuario, con o sin ejemplos contextuales. La cadena de pensamientos (CoT) es una técnica que guía al modelo para resolver un problema con ejemplos que incluyen pasos de razonamiento intermedios.", "source": "TEMARIO.md:5035"}
+  },
+  "5.09": {
+    "point3": {"text": "Agente generativo. Usa modelos de lenguaje grandes para dar al chatbot una sensación de conversación real y determina qué hacer por su cuenta según tu instrucción, a menos que le indiques lo contrario. Para crearlo se usan instrucciones, sin código o solo un poco.", "source": "TEMARIO.md:5476"}
+  },
+  "5.11": {
+    "dist1": {"text": "NotebookLM Enterprise es una herramienta de IA especializada para profundizar en documentos y fuentes web específicos. Gemini Enterprise es un asistente integral de IA empresarial.", "source": "TEMARIO.md:5578"},
+    "dist2": {"text": "Alcance. NotebookLM Enterprise se limita a sus fuentes. Gemini Enterprise abarca todos los sistemas comerciales conectados, no solo los documentos que subas.", "source": "TEMARIO.md:5579"}
+  }
+}

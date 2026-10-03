@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Reel } from '../src/lib/reels';
-import { FPS, FRAME_MS, absoluteFrame, advanceClock, firstPendingLesson, locate, reelFrames, sceneFrames, sceneText, segmentFill, startPlayback, step } from '../src/lib/reels';
+import { FPS, FRAME_MS, absoluteFrame, advanceClock, firstPendingLesson, locate, reelFrames, sceneCues, sceneFrames, sceneText, segmentFill, startPlayback, step } from '../src/lib/reels';
 
 const reel: Reel = { unitId: '1.1', title: 'Prueba', scenes: [
   { kind: 'hook', seconds: 2, title: 'Título', line: 'Línea' },
@@ -87,4 +87,20 @@ test('scene text lists every visible string and pending lesson falls back to the
   assert.deepEqual(sceneText({ kind: 'versus', seconds: 1, a: { term: 'A', line: 'a' }, b: { term: 'B', line: 'b' } }), ['A', 'a', 'B', 'b']);
   assert.equal(firstPendingLesson(['1.01', '1.02'], ['1.01']), '1.02');
   assert.equal(firstPendingLesson(['1.01', '1.02'], ['1.01', '1.02']), '1.01');
+});
+
+// These are the frames the templates used before they were shared with the sound: the animation must not move.
+test('scene cues keep every cut-out on its original entry frame', () => {
+  assert.deepEqual(sceneCues({ kind: 'hook', seconds: 5, title: 'Más que un chatbot', line: 'Línea' }), [4, 8, 11, 14, 17, 22, 28]);
+  assert.deepEqual(sceneCues({ kind: 'concept', seconds: 5, art: '1.1-a', artAlt: 'Arte', lines: ['Una', 'Dos'] }), [1, 9, 16]);
+  assert.deepEqual(sceneCues({ kind: 'versus', seconds: 5, a: { term: 'A', line: 'a' }, b: { term: 'B', line: 'b' } }), [1, 6, 16, 20]);
+  assert.deepEqual(sceneCues(reel.scenes[1]), [1, 10, 24, 38]);
+  assert.deepEqual(sceneCues({ kind: 'example', seconds: 5, art: '1.1-b', artAlt: 'Arte', lines: ['Una'] }), [1, 4, 12]);
+  assert.deepEqual(sceneCues({ kind: 'example', seconds: 5, lines: ['Una'] }), [1, 12]);
+  assert.deepEqual(sceneCues({ kind: 'cta', seconds: 5, line: 'Cierre' }), [1, 8, 16]);
+});
+
+test('a long hook title pushes its strip and fox back instead of overlapping the last word', () => {
+  const cues = sceneCues({ kind: 'hook', seconds: 5, title: 'a b c d e f g', line: 'Línea' });
+  assert.deepEqual(cues.slice(-3), [26, 29, 35]);
 });

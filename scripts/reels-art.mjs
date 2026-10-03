@@ -11,7 +11,10 @@ const comfy = (process.env.COMFY_URL ?? 'http://127.0.0.1:8188').replace(/\/$/, 
 const originals = process.env.REELS_ORIGINALS ?? join(root, '..', '..', 'paper-assets', 'reels');
 const finals = join(root, 'public', 'reels');
 const MAX_BYTES = 120 * 1024;
-const TIMEOUT_MS = 40 * 60 * 1000;
+// Con la memoria justa una imagen pasa de 6 a más de 40 minutos: el límite solo debe saltar si ComfyUI se cuelga.
+const TIMEOUT_MS = 150 * 60 * 1000;
+// Por debajo de esta RAM libre otro programa ocupa la memoria y cada paso tarda diez veces más: mejor esperar.
+const MIN_FREE_GB = Number(process.env.REELS_MIN_FREE_GB ?? 8);
 
 const args = process.argv.slice(2);
 const flag = name => args.includes(name);
@@ -45,6 +48,38 @@ async function checkModels(workflow) {
       if (Array.isArray(options) && !options.includes(value)) fail(`${node.class_type} no encuentra «${value}». Falta el archivo o su enlace en ComfyUI-Shared/models.`);
     }
   }
+}
+
+const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
+// Espera a que ComfyUI no tenga trabajos y haya memoria libre; avisa una sola vez de cada espera.
+async function waitForRoom(id) {
+  let said = '';
+  for (;;) {
+    const queue = await (await api('/queue')).json();
+    const busy = queue.queue_running.length + queue.queue_pending.length;
+    const free = (await (await api('/system_stats')).json()).system.ram_free / 2 ** 30;
+    const reason = busy ? `ComfyUI tiene ${busy} trabajo(s) en curso` : free < MIN_FREE_GB ? `solo hay ${free.toFixed(1)} GB de RAM libres (mínimo ${MIN_FREE_GB})` : '';
+    if (!reason) return;
+    if (reason.split(' ')[0] !== said) { console.log(`ESPERA ${id}: ${reason}`); said = reason.split(' ')[0]; }
+    await pause(30_000);
+  }
+}
+
+// Un trabajo que sobrevivió a una ejecución anterior (por ejemplo, tras el límite de tiempo) puede haber terminado: se aprovecha su imagen.
+async function adopt(workflow, image, seed) {
+  const history = await (await api('/history?max_items=64')).json();
+  for (const entry of Object.values(history).reverse()) {
+    const graph = entry.prompt?.[2] ?? {};
+    const save = Object.entries(graph).find(([, node]) => node.class_type === 'SaveImage');
+    const sampler = Object.values(graph).find(node => node.class_type === 'KSampler');
+    if (save?.[1].inputs.filename_prefix !== `pliegue-reels/${image.id}` || sampler?.inputs.seed !== seed || entry.status?.status_str !== 'success') continue;
+    const file = entry.outputs?.[save[0]]?.images?.[0];
+    if (!file) continue;
+    const query = new URLSearchParams({ filename: file.filename, subfolder: file.subfolder ?? '', type: file.type ?? 'output' });
+    await writeFile(join(originals, `${image.id}.png`), Buffer.from(await (await api(`/view?${query}`)).arrayBuffer()));
+    return true;
+  }
+  return false;
 }
 
 async function generate(workflow, manifest, image) {
@@ -111,7 +146,12 @@ await mkdir(finals, { recursive: true });
 let heavy = 0;
 for (const { image, action } of pending) {
   if (action === 'falta original') { console.log(`SKIP ${image.id}: no hay original que convertir`); continue; }
-  const seconds = action === 'generar' ? await generate(workflow, manifest, image) : null;
+  let seconds = null;
+  if (action === 'generar') {
+    await waitForRoom(image.id);
+    if (!force.has(image.id) && await adopt(workflow, image, image.seed)) console.log(`  ${image.id}: aprovechada la imagen de un trabajo anterior`);
+    else seconds = await generate(workflow, manifest, image);
+  }
   const size = await convert(image.id);
   if (size > MAX_BYTES) heavy += 1;
   console.log(`${size > MAX_BYTES ? 'WARN' : 'PASS'} ${image.id}: ${seconds === null ? 'convertida' : `generada en ${seconds} s`} · ${(size / 1024).toFixed(0)} KB`);

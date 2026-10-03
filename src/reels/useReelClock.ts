@@ -6,12 +6,21 @@ import { absoluteFrame, advanceClock, segmentFill, startPlayback, step } from '.
 const BOIL = [[0, 0, 0], [.6, -.4, .15], [-.5, .5, -.2], [.3, .6, .1], [-.6, -.3, -.1], [.5, .2, .2], [-.2, -.6, -.15], [.4, -.5, .05]];
 const POSTER_FRAME = 999;
 
+interface ClockOptions {
+  // While true the reel waits on its first frame, so picture and narration start together.
+  hold?: boolean;
+  // Called on every state change, ticks included: the sound follows the clock, never the other way round.
+  onTransition?: (prev: Playback, next: Playback, action: PlaybackAction) => void;
+}
+
 // One rAF clock quantized to 12 fps drives the whole stage through CSS variables;
 // React only re-renders when the scene or the play state changes.
-export function useReelClock(reel: Reel, active: boolean, reduced: boolean) {
+export function useReelClock(reel: Reel, active: boolean, reduced: boolean, { hold = false, onTransition }: ClockOptions = {}) {
   const stage = useRef<HTMLDivElement>(null);
   const playback = useRef<Playback>(startPlayback(!reduced));
+  const listener = useRef(onTransition);
   const [view, setView] = useState(playback.current);
+  useEffect(() => { listener.current = onTransition; });
 
   const paint = useCallback(() => {
     const element = stage.current;
@@ -28,16 +37,24 @@ export function useReelClock(reel: Reel, active: boolean, reduced: boolean) {
   }, [reel, active, reduced]);
 
   const dispatch = useCallback((action: PlaybackAction) => {
-    const next = step(playback.current, reel, action);
+    const prev = playback.current;
+    const next = step(prev, reel, action);
     playback.current = next;
     paint();
+    listener.current?.(prev, next, action);
     setView(current => current.scene === next.scene && current.playing === next.playing && current.ended === next.ended ? current : next);
   }, [reel, paint]);
 
   useLayoutEffect(paint, [paint, view.scene]);
   useEffect(() => { if (reduced) dispatch({ type: 'pause' }); }, [reduced, dispatch]);
+  // A reel never keeps talking from a tab or an app that is no longer on screen.
   useEffect(() => {
-    if (!active || reduced || !view.playing) return;
+    const onHide = () => { if (document.hidden) dispatch({ type: 'pause' }); };
+    document.addEventListener('visibilitychange', onHide);
+    return () => document.removeEventListener('visibilitychange', onHide);
+  }, [dispatch]);
+  useEffect(() => {
+    if (!active || reduced || hold || !view.playing) return;
     let request = 0;
     let last = performance.now();
     let rest = 0;
@@ -47,11 +64,9 @@ export function useReelClock(reel: Reel, active: boolean, reduced: boolean) {
       if (clock.frames) dispatch({ type: 'tick', frames: clock.frames });
       request = requestAnimationFrame(loop);
     };
-    const resume = () => { last = performance.now(); };
-    document.addEventListener('visibilitychange', resume);
     request = requestAnimationFrame(loop);
-    return () => { cancelAnimationFrame(request); document.removeEventListener('visibilitychange', resume); };
-  }, [active, reduced, view.playing, dispatch]);
+    return () => cancelAnimationFrame(request);
+  }, [active, reduced, hold, view.playing, dispatch]);
 
   return { stage, view, dispatch };
 }

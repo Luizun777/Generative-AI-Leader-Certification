@@ -3,7 +3,8 @@ export const FRAME_MS = 1000 / FPS;
 const MAX_DELTA_MS = 1000;
 
 export type Accent = 'blue' | 'orange' | 'yellow';
-interface SceneBase { seconds: number; accent?: Accent }
+// `from` cites the lessons a scene adapts and `say` replaces the narrated text; both only serve the scripts.
+interface SceneBase { seconds: number; accent?: Accent; from?: string[]; say?: string }
 export type Scene =
   | SceneBase & { kind: 'hook'; title: string; line: string }
   | SceneBase & { kind: 'concept'; art: string; artAlt: string; lines: string[] }
@@ -68,6 +69,27 @@ export function step(state: Playback, reel: Reel, action: PlaybackAction): Playb
       return { scene: replay ? state.scene : Math.max(0, state.scene - 1), frame: 0, playing: true, ended: false };
     }
     case 'restart': return startPlayback();
+  }
+}
+
+// A cut-out takes this many frames to drop into place; the narration waits for the first one.
+export const LAND_FRAMES = 4;
+export const VOICE_FRAME = 4;
+
+// Entry frame of every cut-out of a scene, in reading order. Templates and sound share them,
+// so what is heard always matches what lands.
+export function sceneCues(scene: Scene): number[] {
+  switch (scene.kind) {
+    case 'hook': {
+      const words = scene.title.split(' ').map((_, index) => 8 + index * 3);
+      const strip = Math.max(22, words[words.length - 1] + 3);
+      return [4, ...words, strip, strip + 6];
+    }
+    case 'concept': return [1, ...scene.lines.map((_, index) => 9 + index * 7)];
+    case 'versus': return [1, 6, 16, 20];
+    case 'list': return [1, ...scene.points.map((_, index) => 10 + index * 14)];
+    case 'example': return scene.art ? [1, 4, 12] : [1, 12];
+    case 'cta': return [1, 8, 16];
   }
 }
 

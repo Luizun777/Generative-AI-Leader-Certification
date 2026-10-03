@@ -1,0 +1,35 @@
+/* Controls added after the first release: sound, welcome card and settings. Loaded after styles.css. */
+.topbar>.stats{margin-left:auto}
+.topbar-controls{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.sound-toggle{border:1px solid var(--line);background:var(--paper);color:var(--muted)}
+.sound-toggle[aria-pressed=true]{color:var(--blue);border-color:#b9c4f5;background:#edf0ff}
+
+.welcome-card{margin-bottom:30px}
+.welcome-card>p:first-of-type{margin-bottom:0}
+.welcome-card .choice-field{margin:20px 0 0}
+.welcome-card .helper{margin:12px 0 18px}
+
+.sound-samples{margin:0 0 6px}
+.sound-samples summary{cursor:pointer;font-weight:750;min-height:44px;display:flex;align-items:center}
+.sample-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px;margin-top:8px}
+.sample-grid .button{padding:10px 12px;font-size:.9375rem}
+
+@media(max-width:420px){.topbar>span{display:none}.segmented button{padding:10px 6px}}
+
+.topbar-controls{margin-left:auto}
+.topbar>.stats+.topbar-controls{margin-left:0}
+.focus-switch{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 11px 0 9px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--muted);font-size:.9375rem;font-weight:750;white-space:nowrap}
+.focus-switch[aria-checked=true]{color:var(--blue);border-color:#b9c4f5;background:#edf0ff}
+.switch-track{position:relative;flex-shrink:0;width:34px;height:20px;border-radius:99px;background:#aeb3bf;transition:background .15s}
+.switch-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px #0000004d;transition:transform .15s}
+.focus-switch[aria-checked=true] .switch-track{background:var(--blue)}
+.focus-switch[aria-checked=true] .switch-thumb{transform:translateX(14px)}
+.focus-short{display:none}
+
+.focus-changes{margin:-8px 0 20px}
+.focus-changes summary{cursor:pointer;font-weight:750;min-height:44px;display:flex;align-items:center}
+.focus-changes ul{margin:4px 0 0;padding-left:1.2rem;display:grid;gap:6px;font-size:.9375rem;color:var(--muted)}
+.multiline{white-space:pre-line}
+
+@media(max-width:980px){.focus-long{display:none}.focus-short{display:inline}}
+@media(max-width:360px){.focus-switch{padding:0 8px;gap:6px}.topbar-controls{gap:6px}}
