@@ -11,8 +11,8 @@ import { COPY } from './lib/copy';
 import { completeLesson, newProgress, parseBackup, recordAnswer, selectQuestions, startSession, touchStreak } from './lib/engine';
 import { defaultPrefs, loadPrefs, savePrefs, soundLevel, withSoundLevel } from './lib/prefs';
 import type { Prefs } from './lib/prefs';
-import { firstPendingLesson } from './lib/reels';
-import type { ReelSet } from './lib/reels';
+import { firstPendingLesson, reelForLesson, reelKey } from './lib/reels';
+import type { Reel, ReelSet } from './lib/reels';
 import type { SoundLevel } from './lib/sound';
 import { eligibleYesNo } from './lib/yesno';
 import { Flashcards } from './modes/Flashcards';
@@ -30,7 +30,8 @@ import { WelcomeCard } from './ui/WelcomeCard';
 import { registerStudyTools } from './webmcp';
 
 const curriculum = rawCurriculum as Curriculum;
-const reelByUnit = new Map((rawReels as ReelSet).reels.map(reel => [reel.unitId, reel]));
+const reelByKey = new Map((rawReels as ReelSet).reels.map(reel => [reelKey(reel), reel]));
+const unitById = new Map(curriculum.units.map(unit => [unit.id, unit]));
 const questionById = new Map(curriculum.questions.map(question => [question.id, question]));
 const lessonById = new Map(curriculum.lessons.map(lesson => [lesson.id, lesson]));
 const practiceQuestions = curriculum.questions.filter(question => !question.exam);
@@ -100,7 +101,8 @@ export default function App() {
   const [roundActive, setRoundActive] = useState(false);
   const [notice, setNotice] = useState('');
   const [pendingSession, setPendingSession] = useState<Session | null>(null);
-  const [reelUnit, setReelUnit] = useState<Unit | null>(null);
+  // A unit's reel starts its next pending lesson; a lesson's reel starts that lesson.
+  const [openReel, setOpenReel] = useState<{ reel: Reel; unit: Unit; lesson?: Lesson } | null>(null);
   const [pendingImport, setPendingImport] = useState<{ progress: Progress; name: string } | null>(null);
   const [importError, setImportError] = useState('');
   const [importBusy, setImportBusy] = useState(false);
@@ -114,6 +116,7 @@ export default function App() {
   const fileInput = useRef<HTMLInputElement>(null);
   const session = progress.activeSession;
   const sessionLesson = session?.lessonId ? lessonById.get(session.lessonId) : undefined;
+  const sessionReel = sessionLesson && reelForLesson(reelByKey, sessionLesson, unitById.get(sessionLesson.unitId)!);
   const currentQuestion = session ? questionById.get(session.questionIds[session.index]) : undefined;
   const nextLesson = curriculum.lessons.find(lesson => !progress.completedLessons.includes(lesson.id)) ?? curriculum.lessons[0];
   const currentWorld = curriculum.worlds.find(world => world.id === worldId)!;
@@ -199,12 +202,13 @@ export default function App() {
     } catch (error) { setNotice(errorText(error)); }
   }
   // The viewer closes first so its dialog never stacks with the «new session» confirmation.
-  function startUnit(unit: Unit) {
-    setReelUnit(null);
-    const lesson = lessonById.get(firstPendingLesson(unit.lessonIds, progressRef.current.completedLessons))!;
+  function startFromReel(unit: Unit, chosen?: Lesson) {
+    setOpenReel(null);
+    const lesson = chosen ?? lessonById.get(firstPendingLesson(unit.lessonIds, progressRef.current.completedLessons))!;
     if (progressRef.current.activeSession?.lessonId === lesson.id) navigate('session');
     else requestSession('lesson', lesson);
   }
+  function showReel(reel: Reel, unit: Unit, lesson?: Lesson) { if (!prefs.muted) unlockAudio(); setOpenReel({ reel, unit, lesson }); }
   function toggleOption(id: string) {
     changeProgress(current => {
       const active = current.activeSession;
@@ -279,8 +283,8 @@ export default function App() {
     return <>
       <section className="world-selector" role="tablist" aria-label="Mundos de aprendizaje">{curriculum.worlds.map((world, index) => { const Icon = worldIcons[index % worldIcons.length]; return <button key={world.id} id={`world-tab-${world.id}`} role="tab" tabIndex={worldId === world.id ? 0 : -1} aria-selected={worldId === world.id} aria-controls="world-panel" title={world.title} className={`world-tab ${worldId === world.id ? 'selected' : ''}`} onClick={() => setWorldId(world.id)} onKeyDown={event => { if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return; event.preventDefault(); const next = event.key === 'Home' ? 0 : event.key === 'End' ? curriculum.worlds.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + curriculum.worlds.length) % curriculum.worlds.length; setWorldId(curriculum.worlds[next].id); document.getElementById(`world-tab-${curriculum.worlds[next].id}`)?.focus(); }}><Icon size={22}/><span>{String(world.id).padStart(2, '0')}</span><span className="sr-only">{world.title}</span></button>; })}</section>
       <div id="world-panel" role="tabpanel" tabIndex={0} aria-labelledby={`world-tab-${worldId}`}><div className="world-intro"><h2>{currentWorld.title}</h2><p>{currentWorld.description}</p></div>
-      {curriculum.units.filter(unit => unit.worldId === worldId).map((unit, index) => <section className="unit" key={unit.id}><div className="unit-title"><span className="unit-number">{String(index + 1).padStart(2, '0')}</span><div><p className="eyebrow">{focus ? 'Unidad' : 'UNIDAD'} {unit.id}</p><h3>{unit.title}</h3></div>{reelByUnit.has(unit.id) && <button className="reel-open" onClick={() => { if (!prefs.muted) unlockAudio(); setReelUnit(unit); }} aria-label={`Ver reel de la unidad ${unit.id}`}><Clapperboard size={17}/>Ver reel</button>}<span className="unit-count" aria-label={`${unit.lessonIds.filter(id => progress.completedLessons.includes(id)).length} de ${unit.lessonIds.length} lecciones completadas`}>{unit.lessonIds.filter(id => progress.completedLessons.includes(id)).length} / {unit.lessonIds.length}</span></div>
-        <div className="lesson-path">{unit.lessonIds.map((id, lessonIndex) => { const lesson = lessonById.get(id)!; const done = progress.completedLessons.includes(id); const current = nextLesson.id === id && !done; return <button key={id} className={`lesson-node ${current ? 'current' : ''}`} onClick={() => session?.lessonId === id ? navigate('session') : requestSession('lesson', lesson)}><span className={`node-circle ${done ? 'done' : current ? '' : 'secondary'}`}>{done ? <Check size={24}/> : current ? <Play size={22} fill="currentColor"/> : lessonIndex + 1}</span><span className="node-copy"><small>{focus ? 'Lección' : 'LECCIÓN'} {id}</small><strong>{lesson.title}</strong><span>{done ? 'Completada · volver a practicar' : session?.lessonId === id ? 'Sesión en curso' : 'Una idea + una práctica breve'}</span></span>{current && <span className="node-pill">EMPEZAR</span>}<ChevronRight className="node-arrow" size={18}/></button>; })}</div>
+      {curriculum.units.filter(unit => unit.worldId === worldId).map((unit, index) => <section className="unit" key={unit.id}><div className="unit-title"><span className="unit-number">{String(index + 1).padStart(2, '0')}</span><div><p className="eyebrow">{focus ? 'Unidad' : 'UNIDAD'} {unit.id}</p><h3>{unit.title}</h3></div>{reelByKey.has(unit.id) && <button className="reel-open" onClick={() => showReel(reelByKey.get(unit.id)!, unit)} aria-label={`Ver reel de la unidad ${unit.id}`}><Clapperboard size={17}/>Ver reel</button>}<span className="unit-count" aria-label={`${unit.lessonIds.filter(id => progress.completedLessons.includes(id)).length} de ${unit.lessonIds.length} lecciones completadas`}>{unit.lessonIds.filter(id => progress.completedLessons.includes(id)).length} / {unit.lessonIds.length}</span></div>
+        <div className="lesson-path">{unit.lessonIds.map((id, lessonIndex) => { const lesson = lessonById.get(id)!; const done = progress.completedLessons.includes(id); const current = nextLesson.id === id && !done; const reel = reelForLesson(reelByKey, lesson, unit); return <div className="lesson-row" key={id}><button className={`lesson-node ${current ? 'current' : ''}`} onClick={() => session?.lessonId === id ? navigate('session') : requestSession('lesson', lesson)}><span className={`node-circle ${done ? 'done' : current ? '' : 'secondary'}`}>{done ? <Check size={24}/> : current ? <Play size={22} fill="currentColor"/> : lessonIndex + 1}</span><span className="node-copy"><small>{focus ? 'Lección' : 'LECCIÓN'} {id}</small><strong>{lesson.title}</strong><span>{done ? 'Completada · volver a practicar' : session?.lessonId === id ? 'Sesión en curso' : 'Una idea + una práctica breve'}</span></span>{current && <span className="node-pill">EMPEZAR</span>}<ChevronRight className="node-arrow" size={18}/></button>{reel && <button className="reel-open lesson-reel" onClick={() => showReel(reel, unit, lesson)} aria-label={`Ver reel de la lección ${id}`}><Clapperboard size={17}/><span>Reel</span></button>}</div>; })}</div>
       </section>)}</div>
     </>;
   }
@@ -330,7 +334,7 @@ export default function App() {
     const right = !!session.responses[session.index]?.correct;
     return <div className="session-wrap"><div className="session-top"><button className="text-button" onClick={() => navigate(session.mode === 'exam' ? 'exam' : session.mode === 'quick' ? 'quick' : 'learn')}><ArrowLeft size={18}/>{t.exitSession}</button><span>{t.sessionLabel(session.mode, session.lessonId)}</span></div>
       {!(focus && session.stage === 'intro') && <div className="session-progress"><progress value={answered} max={total} aria-label="Preguntas respondidas"/><span>{answered} / {total}</span></div>}
-      {session.stage === 'intro' && sessionLesson ? <LessonIntro key={session.id} lesson={sessionLesson} sessionId={session.id} questions={total} stepped={focus} header={heading(t.lessonEyebrow, sessionLesson.title)} t={t} onStart={() => changeProgress(current => current.activeSession?.stage === 'intro' ? ({ ...current, activeSession: { ...current.activeSession, stage: 'question' } }) : current)}/> : null}
+      {session.stage === 'intro' && sessionLesson ? <LessonIntro key={session.id} lesson={sessionLesson} sessionId={session.id} questions={total} stepped={focus} header={heading(t.lessonEyebrow, sessionLesson.title)} t={t} onReel={sessionReel && (() => showReel(sessionReel, unitById.get(sessionLesson.unitId)!, sessionLesson))} onStart={() => changeProgress(current => current.activeSession?.stage === 'intro' ? ({ ...current, activeSession: { ...current.activeSession, stage: 'question' } }) : current)}/> : null}
       {(session.stage === 'question' || session.stage === 'feedback') && currentQuestion ? <>{heading(t.questionEyebrow(session.index + 1, total), t.questionTitle(session.index + 1, total, currentQuestion.kind === 'multiple'))}<section className="question-panel panel paper"><div id="question-prompt"><Markdown className="question-prompt">{currentQuestion.prompt}</Markdown></div><p id="selection-help" className="selection-help">{t.selectionHelp(currentQuestion.kind === 'multiple')}</p><fieldset className="answer-options" aria-labelledby="question-prompt" aria-describedby="selection-help" disabled={feedback}><legend className="sr-only">Opciones de respuesta</legend>{(() => { const item = (option: typeof currentQuestion.options[number]) => { const selected = session.selectedIds.includes(option.id); const correct = currentQuestion.correctIds.includes(option.id); return <label key={option.id} className={`answer-option ${selected ? 'selected' : ''} ${feedback && correct ? 'correct' : ''} ${feedback && selected && !correct ? 'incorrect' : ''}`}><input type={currentQuestion.kind === 'multiple' ? 'checkbox' : 'radio'} name={`answer-${currentQuestion.id}`} checked={selected} onChange={() => toggleOption(option.id)} value={option.id}/><span className="sr-only">Opción {option.id}. </span><span className="option-letter" aria-hidden="true">{feedback && correct ? <Check size={18}/> : feedback && selected ? <X size={18}/> : option.id}</span><Markdown>{option.text}</Markdown>{feedback && (correct || selected) && <span className="answer-state">{correct ? 'Correcta' : t.chosenLabel}</span>}</label>; };
         // After checking, focus mode keeps the chosen and the correct option in view and folds the rest.
         const key = (option: typeof currentQuestion.options[number]) => currentQuestion.correctIds.includes(option.id) || session.selectedIds.includes(option.id);
@@ -357,7 +361,7 @@ export default function App() {
     {loadFailure ? renderProgress() : page === 'learn' ? renderLearn() : page === 'quick' ? renderQuick() : page === 'exam' ? renderExam() : page === 'matching' ? renderMatching() : page === 'session' ? renderSession() : renderProgress()}
     </>}
   </main>
-  {reelUnit && <ReelViewer key={reelUnit.id} reel={reelByUnit.get(reelUnit.id)!} reduced={calm} sound={{ muted: prefs.muted, music: prefs.music && !focus, onMute: () => { if (prefs.muted) unlockAudio(); changePrefs(current => ({ ...current, muted: !current.muted })); }, onMusic: () => changePrefs(current => ({ ...current, music: !current.music })) }} onClose={() => setReelUnit(null)} onStartUnit={() => startUnit(reelUnit)}/>}
+  {openReel && <ReelViewer key={reelKey(openReel.reel)} reel={openReel.reel} reduced={calm} sound={{ muted: prefs.muted, music: prefs.music && !focus, onMute: () => { if (prefs.muted) unlockAudio(); changePrefs(current => ({ ...current, muted: !current.muted })); }, onMusic: () => changePrefs(current => ({ ...current, music: !current.music })) }} onClose={() => setOpenReel(null)} startLabel={!openReel.lesson ? 'Empezar unidad' : session?.lessonId === openReel.lesson.id ? 'Seguir con la lección' : 'Empezar lección'} onStart={() => startFromReel(openReel.unit, openReel.lesson)}/>}
   {pendingSession && <Confirmation title={t.newSessionTitle} confirm={t.newSessionConfirm} onConfirm={() => activateSession(pendingSession)} onCancel={() => setPendingSession(null)}><p>{t.newSessionBody(session?.responses.length ?? 0, session?.questionIds.length ?? 0)}</p><p>{t.newSessionKept}</p><button className="text-button" onClick={() => { setPendingSession(null); navigate('session'); }}>{t.newSessionKeep}</button></Confirmation>}
   {pendingImport && <Confirmation title="¿Restaurar este respaldo?" confirm="Reemplazar mi progreso" onConfirm={() => void confirmImport()} onCancel={() => setPendingImport(null)} busy={importBusy}><p className="backup-filename">{pendingImport.name}</p><p>Archivo validado: <strong>{pendingImport.progress.completedLessons.length} {plural(pendingImport.progress.completedLessons.length, 'lección', 'lecciones')}</strong>, <strong>{pendingImport.progress.xp} XP</strong> y {pendingImport.progress.activeSession ? 'una sesión guardada' : 'ninguna sesión pendiente'}.</p><p>Esto reemplazará el progreso actual de este dispositivo. Puedes cancelar y exportar primero una copia de tu avance actual.</p></Confirmation>}
   </div>;

@@ -19,14 +19,14 @@ function Scraps() {
 }
 
 // Visible text is decorative for assistive tech: the player announces each scene through its live region.
-export function SceneView({ scene, unitId, actions }: { scene: Scene; unitId: string; actions?: ReactNode }) {
+export function SceneView({ scene, label, actions }: { scene: Scene; label: string; actions?: ReactNode }) {
   const props = { className: `reel-scene kind-${scene.kind}`, 'data-accent': scene.accent ?? 'blue' };
   // Entry frames come from sceneCues, in the same order the layers are written below.
   const at = sceneCues(scene);
   const last = at.length - 1;
   switch (scene.kind) {
     case 'hook': return <div {...props} aria-hidden="true"><Scraps/>
-      <Layer at={at[0]} rot={-3} className="reel-chip">UNIDAD {unitId}</Layer>
+      <Layer at={at[0]} rot={-3} className="reel-chip">{label}</Layer>
       <div className="reel-title">{scene.title.split(' ').map((word, index) => <Layer key={index} at={at[1 + index]} rot={index % 2 ? 1.5 : -1.5} className="reel-word">{word}</Layer>)}</div>
       <Layer at={at[last - 1]} rot={1} dx={-3} dy={0} className="reel-strip">{scene.line}</Layer>
       <Layer at={at[last]} dx={6} dy={2} spin={4} amp={.5} className="reel-fox"><img src={asset('art/fox-calm.png')} alt="" draggable={false}/></Layer>

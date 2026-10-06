@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Reel } from '../src/lib/reels';
-import { FPS, FRAME_MS, absoluteFrame, advanceClock, firstPendingLesson, locate, reelFrames, sceneCues, sceneFrames, sceneText, segmentFill, startPlayback, step } from '../src/lib/reels';
+import { FPS, FRAME_MS, absoluteFrame, advanceClock, firstPendingLesson, locate, reelForLesson, reelFrames, reelKey, sceneCues, sceneFrames, sceneText, segmentFill, startPlayback, step } from '../src/lib/reels';
 
 const reel: Reel = { unitId: '1.1', title: 'Prueba', scenes: [
   { kind: 'hook', seconds: 2, title: 'Título', line: 'Línea' },
@@ -103,4 +103,15 @@ test('scene cues keep every cut-out on its original entry frame', () => {
 test('a long hook title pushes its strip and fox back instead of overlapping the last word', () => {
   const cues = sceneCues({ kind: 'hook', seconds: 5, title: 'a b c d e f g', line: 'Línea' });
   assert.deepEqual(cues.slice(-3), [26, 29, 35]);
+});
+
+test('a reel is filed under its lesson when it has one, and a lone lesson opens its unit reel', () => {
+  const own: Reel = { ...reel, lessonId: '1.01' };
+  const alone: Reel = { ...reel, unitId: '4.3' };
+  assert.equal(reelKey(reel), '1.1');
+  assert.equal(reelKey(own), '1.01');
+  const byKey = new Map([reel, own, alone].map(item => [reelKey(item), item]));
+  assert.equal(reelForLesson(byKey, { id: '1.01' }, { id: '1.1', lessonIds: ['1.01', '1.02'] }), own);
+  assert.equal(reelForLesson(byKey, { id: '1.02' }, { id: '1.1', lessonIds: ['1.01', '1.02'] }), undefined);
+  assert.equal(reelForLesson(byKey, { id: '4.07' }, { id: '4.3', lessonIds: ['4.07'] }), alone);
 });

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { ExternalLink } from 'lucide-react';
+import { Clapperboard, ExternalLink } from 'lucide-react';
 import rawOverrides from '../data/lesson-overrides.json';
 import type { Copy } from '../lib/copy';
 import type { LessonOverrides, LessonStep } from '../lib/lesson-steps';
@@ -15,10 +15,10 @@ const overrides = rawOverrides as LessonOverrides;
 const position = new Map<string, { step: number; all: boolean }>();
 export const stepCount = (lesson: Lesson) => lessonSteps(lesson, overrides).length;
 
-interface Props { lesson: Lesson; sessionId: string; questions: number; stepped: boolean; header: ReactNode; t: Copy; onStart: () => void }
+interface Props { lesson: Lesson; sessionId: string; questions: number; stepped: boolean; header: ReactNode; t: Copy; onReel?: () => void; onStart: () => void }
 
 // The idea before the questions: one long page, or one short card per step in focus mode.
-export function LessonIntro({ lesson, sessionId, questions, stepped, header, t, onStart }: Props) {
+export function LessonIntro({ lesson, sessionId, questions, stepped, header, t, onReel, onStart }: Props) {
   const steps = lessonSteps(lesson, overrides);
   const saved = position.get(sessionId);
   const [step, setStep] = useState(Math.min(saved?.step ?? 0, steps.length - 1));
@@ -30,11 +30,14 @@ export function LessonIntro({ lesson, sessionId, questions, stepped, header, t, 
   useEffect(() => { if (moved.current) title.current?.focus(); }, [step, all]);
   const go = (next: number) => { moved.current = true; setStep(next); };
   const source = <a href={lesson.sourceUrl} target="_blank" rel="noreferrer" className="source-link">{t.lessonSource}<ExternalLink size={15}/></a>;
+  // The lesson's reel is an optional first look; it opens over this screen and comes back to it.
+  const reel = onReel && <button className="reel-open lesson-intro-reel" onClick={onReel}><Clapperboard size={17}/>Ver reel de esta lección</button>;
   const text = (kind: LessonStep['kind']) => steps.filter(item => item.kind === kind).map(item => item.text);
 
   if (!stepped || all) {
     const [idea] = text('idea'), points = text('point'), [example] = text('example'), distinctions = text('distinction');
     return <>{header}<article className="lesson-content panel paper">
+      {reel}
       <div className="idea-block"><span className="eyebrow">{t.lessonIdea}</span><Markdown>{idea}</Markdown></div>
       {points.length > 0 && <section><h2>{t.lessonPoints}</h2><ul className="key-points">{points.map((point, index) => <li key={index}><span className="point-number">{index + 1}</span><Markdown>{point}</Markdown></li>)}</ul></section>}
       {example && <section className="example-block"><h2>{t.lessonExample}</h2><Markdown>{example}</Markdown></section>}
@@ -56,6 +59,7 @@ export function LessonIntro({ lesson, sessionId, questions, stepped, header, t, 
       <h2 ref={title} tabIndex={-1}>{name}</h2>
       {label && <h3>{label}</h3>}
       {items.length > 1 ? <ul>{items.map((item, index) => <li key={index}><Markdown>{item}</Markdown></li>)}</ul> : <Markdown>{items[0]}</Markdown>}
+      {step === 0 && reel}
       {last && <><p className="step-note">{t.lessonStart(questions)}</p>{source}</>}
     </section>
     <div className="step-actions">

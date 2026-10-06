@@ -4,7 +4,11 @@
   "GPU": "ge pe u",
   "TPU": "te pe u",
   "API": "a pe i",
+  "APIs": "a pe is",
   "SQL": "ese cu ele",
+  "LLM": "ele ele eme",
+  "HITL": "hache i te ele",
+  "IAM": "i a eme",
   "3D": "tres de",
   "24": "veinticuatro"
 }

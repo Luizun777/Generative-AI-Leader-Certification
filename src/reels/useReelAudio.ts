@@ -3,7 +3,7 @@ import rawAudio from '../data/reels-audio.json';
 import type { ReelAudioIndex, ReelAudioInfo } from '../lib/reelAudio';
 import { audioCommands } from '../lib/reelAudio';
 import type { Playback, PlaybackAction, Reel } from '../lib/reels';
-import { startPlayback } from '../lib/reels';
+import { reelKey, startPlayback } from '../lib/reels';
 import { createReelAudioEngine } from './reelAudioEngine';
 
 const index = rawAudio as ReelAudioIndex;
@@ -11,13 +11,13 @@ const asset = (name: string) => `${import.meta.env.BASE_URL}reels-audio/${name}`
 // The picture waits this long for the audio at most; a slow file must not hold the reel back.
 const HOLD_MS = 1500;
 
-export const hasNarration = (reel: Reel) => !!index.reels[reel.unitId];
+export const hasNarration = (reel: Reel) => !!index.reels[reelKey(reel)];
 
 // Loads the reel's audio and turns clock transitions into sound. With sound off nothing is fetched.
 export function useReelAudio(reel: Reel, sound: { on: boolean; music: boolean }, still: boolean) {
   const engine = useRef<ReturnType<typeof createReelAudioEngine> | null>(null);
   const last = useRef<Playback>(startPlayback(!still));
-  const entry = index.reels[reel.unitId];
+  const entry = index.reels[reelKey(reel)];
   const info = useRef<ReelAudioInfo>({ clips: [], voice: false, effects: false, music: false, still });
   info.current = { clips: entry?.scenes ?? [], voice: sound.on && !!entry, effects: sound.on && !still, music: sound.on && sound.music && !still && !!index.music, still };
   const [ready, setReady] = useState(!sound.on);

@@ -129,25 +129,27 @@ function similarity(expected, heard) {
 // Nombres propios y siglas de un reel: orientan al transcriptor sin darle la frase que debe comprobar.
 const names = reel => [...new Set(reel.scenes.flatMap(scene => narration(scene).match(/(?<=[\p{L}\p{N},;:] )\p{Lu}[\p{L}\p{N}]+|\p{Lu}{2,}/gu) ?? []))];
 
+// La clave del reel nombra su carpeta de originales, su MP3 y su entrada del índice: la lección si la tiene, la unidad si no.
+const key = reel => reel.lessonId ?? reel.unitId;
 const data = await json(join(root, 'src', 'data', 'reels.json'));
 const lexicon = await json(join(root, 'scripts', 'voice', 'lexicon.json'));
 const voice = await json(join(root, 'scripts', 'voice', 'voice.json'));
 const tempo = voice.tempo ?? 1;
-const selected = data.reels.filter(reel => !only.length || only.some(filter => reel.unitId === filter || reel.unitId.startsWith(`${filter}.`)));
+const selected = data.reels.filter(reel => !only.length || only.some(filter => key(reel) === filter || key(reel).startsWith(`${filter}.`)));
 if (!selected.length) fail('ningún reel coincide con --only');
 
 const plan = [];
 for (const reel of selected) for (const [index, scene] of reel.scenes.entries()) {
   const text = narration(scene, lexicon);
   const hash = narrationHash(text, voice);
-  const base = join(originals, reel.unitId, `${index + 1}-${hash}`);
+  const base = join(originals, key(reel), `${index + 1}-${hash}`);
   const cached = !force && await exists(`${base}.wav`) && await exists(`${base}.json`);
   // La voz dice «a pe i» y el transcriptor escribe «API»: la toma se compara con lo dicho y con lo escrito.
   plan.push({ reel, index, scene, text, written: narration(scene), hint: `Nombres: ${names(reel).join(', ')}.`, hash, base, cached, redo: cached && retake && (await json(`${base}.json`)).score < voice.minScore });
 }
 const pending = plan.filter(item => !item.cached || item.redo);
 console.log(`${selected.length} reels · ${plan.length} escenas · ${pending.length} por narrar · voz ${voice.id} · originales en ${originals}`);
-if (dryRun) { for (const item of pending) console.log(`  ${item.reel.unitId} escena ${item.index + 1}  ${item.text}`); process.exit(0); }
+if (dryRun) { for (const item of pending) console.log(`  ${key(item.reel)} escena ${item.index + 1}  ${item.text}`); process.exit(0); }
 
 if (pending.length) {
   const health = await (await api('/health')).json();
@@ -160,7 +162,7 @@ const work = join(tmpdir(), `pliegue-voz-${process.pid}`);
 await mkdir(work, { recursive: true });
 
 for (const item of pending) {
-  await mkdir(join(originals, item.reel.unitId), { recursive: true });
+  await mkdir(join(originals, key(item.reel)), { recursive: true });
   let best = null;
   const consider = async (path, take) => {
     const duration = (await pcm(path)).length / 2 / RATE / tempo;
@@ -173,13 +175,13 @@ for (const item of pending) {
   };
   let done = item.redo && await consider(`${item.base}.wav`, 0);
   for (let take = 1; !done && take <= voice.takes; take++) {
-    const path = join(work, `${item.reel.unitId}-${item.index + 1}-${take}.wav`);
+    const path = join(work, `${key(item.reel)}-${item.index + 1}-${take}.wav`);
     await synthesize(item.text, voice, path);
     done = await consider(path, take);
   }
   if (best.take) await writeFile(`${item.base}.wav`, await readFile(best.path));
   await writeFile(`${item.base}.json`, `${JSON.stringify({ text: item.text, voice: voice.id, duration: Number(best.duration.toFixed(3)), score: Number(best.score.toFixed(3)), heard: best.heard, takes: best.take }, null, 2)}\n`);
-  console.log(`  ${item.reel.unitId} escena ${item.index + 1}: ${best.duration.toFixed(2)} s · ${best.take ? `toma ${best.take}` : 'toma guardada'} · parecido ${best.score.toFixed(2)}${best.fits ? '' : ' · no cabe'}`);
+  console.log(`  ${key(item.reel)} escena ${item.index + 1}: ${best.duration.toFixed(2)} s · ${best.take ? `toma ${best.take}` : 'toma guardada'} · parecido ${best.score.toFixed(2)}${best.fits ? '' : ' · no cabe'}`);
 }
 transcriber?.close();
 await rm(work, { recursive: true, force: true });
@@ -201,22 +203,22 @@ for (const reel of selected) {
     scenes.push({ start: Number(cursor.toFixed(3)), duration: Number(duration.toFixed(3)), hash: item.hash });
     cursor += duration + GAP;
     const needed = half(Math.max(1.5 + shown(item.scene).join('').length / 15, VOICE_FRAME / FPS + duration + VOICE_TAIL));
-    if (fit ? needed !== item.scene.seconds : !voiceFits(item.scene, duration)) tight.push({ unit: reel.unitId, scene: item.index, seconds: item.scene.seconds, needed });
-    if (meta.score < voice.minScore) weak.push(`${reel.unitId} escena ${item.index + 1} (parecido ${meta.score}): «${meta.heard}»`);
+    if (fit ? needed !== item.scene.seconds : !voiceFits(item.scene, duration)) tight.push({ unit: key(reel), lesson: !!reel.lessonId, scene: item.index, seconds: item.scene.seconds, needed });
+    if (meta.score < voice.minScore) weak.push(`${key(reel)} escena ${item.index + 1} (parecido ${meta.score}): «${meta.heard}»`);
   }
-  const joined = join(tmpdir(), `pliegue-voz-${process.pid}-${reel.unitId}.wav`);
+  const joined = join(tmpdir(), `pliegue-voz-${process.pid}-${key(reel)}.wav`);
   await writeFile(joined, wav(Buffer.concat(parts)));
   // Volumen lineal hasta -17 LUFS sin pasar de -1,5 dB de pico: iguala los reels sin tocar la dinámica de la voz.
   const { stderr } = await run('ffmpeg', ['-hide_banner', '-nostats', '-i', joined, '-af', 'loudnorm=I=-17:TP=-1.5:LRA=11:print_format=json', '-f', 'null', '-']);
   const measured = JSON.parse(stderr.slice(stderr.lastIndexOf('{'), stderr.lastIndexOf('}') + 1));
   const gain = Math.min(-17 - Number(measured.input_i), -1.5 - Number(measured.input_tp));
-  const output = join(audioDir, `${reel.unitId}.mp3`);
+  const output = join(audioDir, `${key(reel)}.mp3`);
   await run('ffmpeg', ['-y', '-loglevel', 'error', '-i', joined, '-af', `volume=${gain.toFixed(2)}dB`, '-ar', String(RATE), '-ac', '1', '-c:a', 'libmp3lame', '-q:a', '7', '-map_metadata', '-1', output]);
   await rm(joined, { force: true });
   const { size } = await stat(output);
-  if (size > MAX_REEL_BYTES) fail(`${reel.unitId}.mp3 pesa ${(size / 1024).toFixed(0)} KB (máximo ${MAX_REEL_BYTES / 1024})`);
-  index.reels[reel.unitId] = { file: `${reel.unitId}.mp3`, bytes: size, scenes };
-  console.log(`PASS ${reel.unitId}: ${scenes.length} escenas · ${cursor.toFixed(1)} s de voz · ${(size / 1024).toFixed(0)} KB`);
+  if (size > MAX_REEL_BYTES) fail(`${key(reel)}.mp3 pesa ${(size / 1024).toFixed(0)} KB (máximo ${MAX_REEL_BYTES / 1024})`);
+  index.reels[key(reel)] = { file: `${key(reel)}.mp3`, bytes: size, scenes };
+  console.log(`PASS ${key(reel)}: ${scenes.length} escenas · ${cursor.toFixed(1)} s de voz · ${(size / 1024).toFixed(0)} KB`);
 }
 await writeIndex({ ...index, voice: voice.id });
 
@@ -225,7 +227,9 @@ if (fit && tight.length) {
   const path = join(root, 'src', 'data', 'reels.json');
   const lines = (await readFile(path, 'utf8')).split('\n');
   for (const change of tight) {
-    const reelAt = lines.findIndex(line => line.includes(`"unitId": "${change.unit}"`));
+    // Un reel de lección también lleva el id de su unidad: la cabecera se busca por el campo que lo distingue.
+    const reelAt = lines.findIndex(line => change.lesson ? line.includes(`"lessonId": "${change.unit}"`) : line.includes(`"unitId": "${change.unit}"`) && !line.includes('"lessonId"'));
+    if (reelAt < 0) fail(`no encuentro el reel ${change.unit} en reels.json`);
     const sceneAt = lines.findIndex((line, at) => at > reelAt && line.trimStart().startsWith('{ "kind"')) + change.scene;
     lines[sceneAt] = lines[sceneAt].replace(/"seconds": [0-9.]+/, `"seconds": ${change.needed}`);
   }

@@ -82,6 +82,13 @@
 .reel-open{margin-left:auto;display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:8px 14px;border-radius:99px;background:var(--yellow);color:#3a321b;font-size:.875rem;font-weight:750;white-space:nowrap;box-shadow:0 3px 0 #00000020}
 .reel-open:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 #00000020}
 .reel-open + .unit-count{margin-left:12px}
+/* Each lesson's reel sits beside its row, never inside the lesson button. */
+.lesson-row{display:flex;align-items:center;gap:8px}
+.lesson-row .lesson-node{flex:1;min-width:0;width:auto}
+.lesson-reel{margin-left:0;flex-shrink:0;position:relative;background:#fff6d2;box-shadow:inset 0 0 0 1px #edca6d}
+.lesson-reel:not(:disabled):active{box-shadow:inset 0 0 0 1px #edca6d}
+.lesson-intro-reel{margin:0 0 18px}
+.step-card .lesson-intro-reel{margin:18px 0 0}
 
 @media(max-width:760px){.reel-viewer .reel-stage{width:100vw;height:100dvh;border-radius:0;box-shadow:none}}
-@media(max-width:420px){.reel-open{padding:8px 11px}.reel-open + .unit-count{margin-left:8px}}
+@media(max-width:420px){.reel-open{padding:8px 11px}.lesson-reel{width:44px;padding:0;justify-content:center}.lesson-reel span{display:none}.reel-open + .unit-count{margin-left:8px}}

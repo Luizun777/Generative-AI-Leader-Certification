@@ -3,8 +3,17 @@
 ## Estado en tres líneas
 
 1. Juego funcional con 51 lecciones, 229 preguntas de práctica y 40 de desafío, progreso, respaldos y web sin conexión comprobada.
-2. APK firmada 1.0.2 publicada en `public/downloads` (la 1.0.1 se instaló y actualizó conservando una fixture nativa); falta probar la 1.0.2 en un dispositivo.
+2. APK firmada 1.0.3 (versionCode 4, 18,4 MB, SHA-256 `4c0a8586…a731`, misma firma que las anteriores) publicada en `public/downloads`; falta probarla en un dispositivo, incluido el audio de los reels.
 3. Publicación Sites pendiente de recuperar su complemento local; revisión Google Skills pendiente de 11 quizzes y cinco guías ES.
+
+## Reels por lección (2026-10-06)
+
+- 66 reels: los 17 de unidad y 49 de lección. 4.07 y 5.12 son la lección única de su unidad y abren el reel de la unidad. `reelKey` (lección si la tiene, unidad si no) nombra arte, voz y entrada de `reels-audio.json`; `reelForLesson` elige el reel de una lección.
+- Interfaz: botón «Reel» junto a cada lección de la ruta y «Ver reel de esta lección» al empezarla; el reel de lección dice «Empezar lección» o «Seguir con la lección».
+- `node scripts/validate-reels.mjs` (estricto): `PASS reels: 17/17 de unidad · 49/49 de lección · 132/132 ilustraciones · 1735 KB · 66/66 con voz · música sí · audio 11469 KB`. Topes: arte 3 MB, audio 13 MB. Precarga: 215 archivos.
+- Los guiones son de redacción propia y cada escena cita su lección en `from`; falta que los leas (documento de revisión enviado). La voz se comprobó por transcripción (mínimo 0,93), no de oído.
+- Arte: 98 imágenes nuevas, revisadas una a una; 2.04-a se regeneró porque traía fotos con figuras. Originales en `../../paper-assets/reels`.
+- Aprendido: el comando en segundo plano se corta a las 2 h, pero `nohup node scripts/reels-art.mjs …` sigue vivo; dos tandas de voz a la vez pisarían `reels-audio.json`; `--fit` ajusta los segundos de cada escena a su voz.
 
 ## Modo enfoque, sonido, modos nuevos y reels con audio (2026-10-02)
 

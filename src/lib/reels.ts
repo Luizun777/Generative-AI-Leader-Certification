@@ -12,7 +12,8 @@ export type Scene =
   | SceneBase & { kind: 'versus'; a: { term: string; line: string }; b: { term: string; line: string } }
   | SceneBase & { kind: 'example'; lines: string[]; art?: string; artAlt?: string }
   | SceneBase & { kind: 'cta'; line: string };
-export interface Reel { unitId: string; title: string; scenes: Scene[] }
+// Every reel belongs to a unit; the ones made for one lesson also carry that lesson's id.
+export interface Reel { unitId: string; lessonId?: string; title: string; scenes: Scene[] }
 export interface ReelSet { version: 1; fps: number; reels: Reel[] }
 
 export interface Playback { scene: number; frame: number; playing: boolean; ended: boolean }
@@ -106,6 +107,13 @@ export function sceneText(scene: Scene): string[] {
     case 'example': return scene.lines;
     case 'cta': return [scene.line];
   }
+}
+
+// The key names a reel's audio and art files: its lesson when it has one, its unit otherwise.
+export const reelKey = (reel: Reel) => reel.lessonId ?? reel.unitId;
+// A unit with a single lesson has a single reel: that lesson opens the unit's.
+export function reelForLesson(byKey: ReadonlyMap<string, Reel>, lesson: { id: string }, unit: { id: string; lessonIds: readonly string[] }): Reel | undefined {
+  return byKey.get(lesson.id) ?? (unit.lessonIds.length === 1 ? byKey.get(unit.id) : undefined);
 }
 
 export function firstPendingLesson(lessonIds: readonly string[], completed: readonly string[]): string {

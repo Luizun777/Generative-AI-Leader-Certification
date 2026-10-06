@@ -15,8 +15,10 @@ const motionQuery = '(prefers-reduced-motion: reduce)';
 
 // The viewer covers the app's top bar, so it carries its own sound controls.
 export interface ReelSound { muted: boolean; music: boolean; onMute: () => void; onMusic: () => void }
-interface Props { reel: Reel; reduced: boolean; active?: boolean; sound?: ReelSound; onClose?: () => void; onStartUnit: () => void }
-export function ReelPlayer({ reel, reduced, active = true, sound, onClose, onStartUnit }: Props) {
+interface Props { reel: Reel; reduced: boolean; active?: boolean; sound?: ReelSound; onClose?: () => void; startLabel: string; onStart: () => void }
+export function ReelPlayer({ reel, reduced, active = true, sound, onClose, startLabel, onStart }: Props) {
+  // A reel made for one lesson is labelled with it; the rest carry their unit.
+  const label = reel.lessonId ? `LECCIÓN ${reel.lessonId}` : `UNIDAD ${reel.unitId}`;
   const [systemReduced, setSystemReduced] = useState(() => window.matchMedia(motionQuery).matches);
   useEffect(() => {
     const query = window.matchMedia(motionQuery);
@@ -72,14 +74,14 @@ export function ReelPlayer({ reel, reduced, active = true, sound, onClose, onSta
 
   return <div ref={stage} className="reel-stage" data-still={still} onPointerDown={pointerDown} onPointerUp={event => release(event, true)} onPointerCancel={event => release(event, false)} onPointerLeave={event => release(event, false)} onKeyDown={keyDown}>
     <div className="reel-segments" aria-hidden="true">{reel.scenes.map((_, index) => <span key={index} className="reel-segment"/>)}</div>
-    <div className="reel-top" data-muted={!!sound?.muted}><span className="reel-label"><Clapperboard size={15}/><span className="reel-label-kind">REEL · </span>UNIDAD {reel.unitId}</span><div className="reel-top-actions">
+    <div className="reel-top" data-muted={!!sound?.muted}><span className="reel-label"><Clapperboard size={15}/><span className="reel-label-kind">REEL · </span>{label}</span><div className="reel-top-actions">
       {sound && !sound.muted && !still && <button className="reel-control reel-music" aria-pressed={sound.music} aria-label="Música" title={sound.music ? 'Música activada' : 'Música desactivada'} onClick={sound.onMusic}><Music size={20}/></button>}
       {/* A reel is made to be heard: while the app is silent the way to turn the sound on is spelled out. */}
       {sound && (sound.muted ? <button className="reel-control reel-unmute" onClick={sound.onMute}><VolumeX size={19}/><span>Activar sonido</span></button>
         : <button className="reel-control" aria-pressed aria-label="Sonido" title="Sonido activado" onClick={sound.onMute}><Volume2 size={21}/></button>)}
       {onClose && <button className="reel-control" onClick={onClose} aria-label="Cerrar reel" autoFocus><X size={22}/></button>}
     </div></div>
-    <SceneView key={view.scene} scene={scene} unitId={reel.unitId} actions={<><button className="button warm" onClick={onStartUnit}><Play size={18} fill="currentColor"/>Empezar unidad</button><button className="button outline" onClick={() => dispatch({ type: 'restart' })}><RotateCcw size={17}/>Repetir</button></>}/>
+    <SceneView key={view.scene} scene={scene} label={label} actions={<><button className="button warm" onClick={onStart}><Play size={18} fill="currentColor"/>{startLabel}</button><button className="button outline" onClick={() => dispatch({ type: 'restart' })}><RotateCcw size={17}/>Repetir</button></>}/>
     {/* With the narration on, the voice already says the scene: announcing its text too would talk over it. */}
     {active && <p className="sr-only" aria-live="polite">{narrated ? `Escena ${view.scene + 1} de ${reel.scenes.length}.` : `Escena ${view.scene + 1} de ${reel.scenes.length}. ${sceneText(scene).join('. ')}`}</p>}
     <div className="reel-controls">
