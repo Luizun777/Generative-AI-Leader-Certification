@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Reel } from '../src/lib/reels';
-import { FPS, FRAME_MS, absoluteFrame, advanceClock, firstPendingLesson, locate, reelForLesson, reelFrames, reelKey, sceneCues, sceneFrames, sceneText, segmentFill, startPlayback, step } from '../src/lib/reels';
+import { FPS, FRAME_MS, absoluteFrame, advanceClock, feedOrder, firstPendingLesson, locate, reelForLesson, reelFrames, reelKey, sceneCues, sceneFrames, sceneText, segmentFill, startPlayback, step } from '../src/lib/reels';
 
 const reel: Reel = { unitId: '1.1', title: 'Prueba', scenes: [
   { kind: 'hook', seconds: 2, title: 'Título', line: 'Línea' },
@@ -114,4 +114,13 @@ test('a reel is filed under its lesson when it has one, and a lone lesson opens 
   assert.equal(reelForLesson(byKey, { id: '1.01' }, { id: '1.1', lessonIds: ['1.01', '1.02'] }), own);
   assert.equal(reelForLesson(byKey, { id: '1.02' }, { id: '1.1', lessonIds: ['1.01', '1.02'] }), undefined);
   assert.equal(reelForLesson(byKey, { id: '4.07' }, { id: '4.3', lessonIds: ['4.07'] }), alone);
+});
+
+test('the feed lists each unit reel before its lesson reels, once each', () => {
+  const make = (unitId: string, lessonId?: string): Reel => ({ unitId, lessonId, title: lessonId ?? unitId, scenes: reel.scenes });
+  const reels = [make('2.1'), make('1.1'), make('1.1', '1.01'), make('1.1', '1.02'), make('2.1', '2.01')];
+  const units = [{ id: '1.1', lessonIds: ['1.01', '1.02'] }, { id: '2.1', lessonIds: ['2.01'] }];
+  assert.deepEqual(feedOrder(reels, units).map(reelKey), ['1.1', '1.01', '1.02', '2.1', '2.01']);
+  // A unit with one lesson has a single reel: it must not appear twice.
+  assert.deepEqual(feedOrder([make('4.1')], [{ id: '4.1', lessonIds: ['4.07'] }]).map(reelKey), ['4.1']);
 });

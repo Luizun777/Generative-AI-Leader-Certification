@@ -119,3 +119,17 @@ export function reelForLesson(byKey: ReadonlyMap<string, Reel>, lesson: { id: st
 export function firstPendingLesson(lessonIds: readonly string[], completed: readonly string[]): string {
   return lessonIds.find(id => !completed.includes(id)) ?? lessonIds[0];
 }
+
+// Feed order follows the course: each unit's own reel, then the reel of each of its lessons.
+export function feedOrder(reels: readonly Reel[], units: readonly { id: string; lessonIds: readonly string[] }[]): Reel[] {
+  const byKey = new Map(reels.map(reel => [reelKey(reel), reel]));
+  const seen = new Set<Reel>();
+  const ordered: Reel[] = [];
+  for (const unit of units) {
+    for (const key of [unit.id, ...unit.lessonIds]) {
+      const reel = byKey.get(key);
+      if (reel && !seen.has(reel)) { seen.add(reel); ordered.push(reel); }
+    }
+  }
+  return ordered;
+}

@@ -11,7 +11,7 @@ import { COPY } from './lib/copy';
 import { completeLesson, newProgress, parseBackup, recordAnswer, selectQuestions, startSession, touchStreak } from './lib/engine';
 import { defaultPrefs, loadPrefs, savePrefs, soundLevel, withSoundLevel } from './lib/prefs';
 import type { Prefs } from './lib/prefs';
-import { firstPendingLesson, reelForLesson, reelKey } from './lib/reels';
+import { feedOrder, firstPendingLesson, reelForLesson, reelKey } from './lib/reels';
 import type { Reel, ReelSet } from './lib/reels';
 import type { SoundLevel } from './lib/sound';
 import { eligibleYesNo } from './lib/yesno';
@@ -22,6 +22,7 @@ import { Matching, restartMatching } from './modes/Matching';
 import { YesNo } from './modes/YesNo';
 import { exportBackup, loadProgress, restoreProgress, saveProgress } from './lib/storage';
 import { ReelViewer } from './reels/ReelViewer';
+import { ReelFeed } from './reels/ReelFeed';
 import { installTapSound, play, setSoundLevel, unlockAudio } from './sound/web';
 import { Markdown } from './ui/Markdown';
 import { PacePanel } from './ui/PacePanel';
@@ -31,6 +32,7 @@ import { registerStudyTools } from './webmcp';
 
 const curriculum = rawCurriculum as Curriculum;
 const reelByKey = new Map((rawReels as ReelSet).reels.map(reel => [reelKey(reel), reel]));
+const feedReels = feedOrder((rawReels as ReelSet).reels, curriculum.units);
 const unitById = new Map(curriculum.units.map(unit => [unit.id, unit]));
 const questionById = new Map(curriculum.questions.map(question => [question.id, question]));
 const lessonById = new Map(curriculum.lessons.map(lesson => [lesson.id, lesson]));
@@ -40,13 +42,14 @@ const yesNoQuestions = eligibleYesNo(curriculum.questions);
 const deck = rawGlossary.cards as GlossaryCard[];
 const worldIcons = [Briefcase, Brain, Layers, MessageCircle, Bot];
 const asset = (name: string) => `${import.meta.env.BASE_URL}${name}`;
-type Page = 'learn' | 'quick' | 'matching' | 'exam' | 'progress' | 'session';
+type Page = 'learn' | 'reels' | 'quick' | 'matching' | 'exam' | 'progress' | 'session';
 type QuickMode = 'questions' | 'yesno' | 'cards';
 const quickModes: { mode: QuickMode; label: string; title: string }[] = [
   { mode: 'questions', label: 'Preguntas', title: '' }, { mode: 'yesno', label: '¿Sí o no?', title: '¿Sí o no?' }, { mode: 'cards', label: 'Tarjetas', title: 'Tarjetas de memoria' },
 ];
 const navigation: { page: Page; label: string; short: string; Icon: typeof BookOpen }[] = [
   { page: 'learn', label: 'Aprender', short: 'Aprender', Icon: BookOpen },
+  { page: 'reels', label: 'Reels', short: 'Reels', Icon: Clapperboard },
   { page: 'quick', label: 'Repaso rápido', short: 'Repasar', Icon: Shuffle },
   { page: 'matching', label: 'Conecta ideas', short: 'Conectar', Icon: Layers },
   { page: 'exam', label: 'Desafío final', short: 'Desafío', Icon: Flag },
@@ -208,6 +211,10 @@ export default function App() {
     if (progressRef.current.activeSession?.lessonId === lesson.id) navigate('session');
     else requestSession('lesson', lesson);
   }
+  const reelSound = { muted: prefs.muted, music: prefs.music && !focus, onMute: () => { if (prefs.muted) unlockAudio(); changePrefs(current => ({ ...current, muted: !current.muted })); }, onMusic: () => changePrefs(current => ({ ...current, music: !current.music })) };
+  // The feed opens on the reel of the lesson the person is up to.
+  const feedStart = reelForLesson(reelByKey, nextLesson, unitById.get(nextLesson.unitId)!);
+  function openFeed() { if (!prefs.muted) unlockAudio(); navigate('reels'); }
   function showReel(reel: Reel, unit: Unit, lesson?: Lesson) { if (!prefs.muted) unlockAudio(); setOpenReel({ reel, unit, lesson }); }
   function toggleOption(id: string) {
     changeProgress(current => {
@@ -352,16 +359,17 @@ export default function App() {
       <section className="content-footnote"><h2>Una ruta basada en tus materiales</h2><p>{curriculum.worlds.length} mundos · {curriculum.units.length} unidades · {curriculum.lessons.length} lecciones · {practiceQuestions.length} preguntas de práctica · {examQuestions.length} de simulacro.</p><p>Contenido: {curriculum.sourceDate}. Cada lección y pregunta conserva su referencia. Los enlaces a las fuentes requieren conexión; la práctica usa contenido incluido en la app.</p></section></>;
   }
 
-  return <div className="app-shell" data-reduced-motion={loading || calm} data-focus={loading || focus} data-immersive={immersive}><a className="skip-link" href="#main-content">Saltar al contenido</a><aside className="sidebar"><button className="brand" onClick={() => navigate('learn')} aria-label="Pliegue IA, ir a aprender"><img src={asset('favicon.svg')} alt=""/><span>pliegue<span className="brand-ia">ia</span></span></button><div className="brand-caption">IDEAS QUE TOMAN FORMA</div><nav aria-label="Principal">{navigation.map(({ page: item, label, short, Icon }) => <button key={item} className={`nav-item ${activePage === item ? 'active' : ''}`} aria-current={activePage === item ? 'page' : undefined} aria-label={short === label ? label : `${short}: ${label}`} title={label} onClick={() => navigate(loadFailure ? 'progress' : item)} disabled={loading}><Icon/><span className="nav-label">{label}</span><span className="nav-short" aria-hidden="true">{short}</span></button>)}</nav><div className="sidebar-bottom"><span className="course-label">TU RUTA</span><strong>Generative AI Leader</strong><p>{curriculum.lessons.length} pequeñas lecciones.<br/>Un mundo de posibilidades.</p><div className="sidebar-progress"><progress max={curriculum.lessons.length} value={progress.completedLessons.length} aria-label="Lecciones completadas"/><span>{progress.completedLessons.length} de {curriculum.lessons.length} completadas</span></div></div></aside><main className="main" id="main-content" tabIndex={-1}><header className="topbar"><span>{focus ? immersive ? '' : `${doneLessons} de ${curriculum.lessons.length} lecciones` : 'APRENDE A TU RITMO'}</span><div className="stats"><span title="Racha de estudio"><Flame size={19}/>{shownStreak(progress)} {shownStreak(progress) === 1 ? 'día' : 'días'}</span><span title="Experiencia acumulada"><Sparkles size={19}/>{progress.xp} XP</span></div>{!loading && <TopbarControls muted={prefs.muted} focus={focus} onMute={() => changePrefs(current => ({ ...current, muted: !current.muted }))} onFocus={() => chooseFocus(!focus)}/>}</header>
+  return <div className="app-shell" data-reduced-motion={loading || calm} data-focus={loading || focus} data-immersive={immersive}><a className="skip-link" href="#main-content">Saltar al contenido</a><aside className="sidebar"><button className="brand" onClick={() => navigate('learn')} aria-label="Pliegue IA, ir a aprender"><img src={asset('favicon.svg')} alt=""/><span>pliegue<span className="brand-ia">ia</span></span></button><div className="brand-caption">IDEAS QUE TOMAN FORMA</div><nav aria-label="Principal">{navigation.map(({ page: item, label, short, Icon }) => <button key={item} className={`nav-item ${activePage === item ? 'active' : ''}`} aria-current={activePage === item ? 'page' : undefined} aria-label={short === label ? label : `${short}: ${label}`} title={label} onClick={() => item === 'reels' && !loadFailure ? openFeed() : navigate(loadFailure ? 'progress' : item)} disabled={loading}><Icon/><span className="nav-label">{label}</span><span className="nav-short" aria-hidden="true">{short}</span></button>)}</nav><div className="sidebar-bottom"><span className="course-label">TU RUTA</span><strong>Generative AI Leader</strong><p>{curriculum.lessons.length} pequeñas lecciones.<br/>Un mundo de posibilidades.</p><div className="sidebar-progress"><progress max={curriculum.lessons.length} value={progress.completedLessons.length} aria-label="Lecciones completadas"/><span>{progress.completedLessons.length} de {curriculum.lessons.length} completadas</span></div></div></aside><main className="main" id="main-content" tabIndex={-1}><header className="topbar"><span>{focus ? immersive ? '' : `${doneLessons} de ${curriculum.lessons.length} lecciones` : 'APRENDE A TU RITMO'}</span><div className="stats"><span title="Racha de estudio"><Flame size={19}/>{shownStreak(progress)} {shownStreak(progress) === 1 ? 'día' : 'días'}</span><span title="Experiencia acumulada"><Sparkles size={19}/>{progress.xp} XP</span></div>{!loading && <TopbarControls muted={prefs.muted} focus={focus} onMute={() => changePrefs(current => ({ ...current, muted: !current.muted }))} onFocus={() => chooseFocus(!focus)}/>}</header>
     {loading ? <section className="loading-panel" role="status"><LoaderCircle className="spinning"/><p>{t.loading}</p></section> : <>
     {loadFailure && <div className="status-banner error" role="alert"><ShieldCheck size={21}/><div><strong>No pudimos abrir el progreso guardado.</strong><p>{loadFailure}</p></div></div>}
     {saveFailure && <div className="status-banner error" role="alert"><div><strong>No se pudo guardar el último cambio.</strong><p>{saveFailure} Mantén la app abierta y reintenta, o exporta un respaldo desde Mi progreso.</p></div><button className="button outline" onClick={() => persist(progressRef.current)}>Reintentar guardado</button></div>}
     {notice && <div className="status-banner" role="status"><p>{notice}</p><button className="icon-button" onClick={() => setNotice('')} aria-label="Cerrar aviso"><X size={19}/></button></div>}
     {session && page !== 'session' && page !== 'learn' && !inRound && !loadFailure && <div className="resume-banner"><span><strong>{session.stage === 'results' ? 'Resultados listos' : 'Tienes una sesión guardada'}</strong><small>{session.responses.length} de {session.questionIds.length} {plural(session.questionIds.length, 'pregunta respondida', 'preguntas respondidas')}</small></span><button className="text-button" onClick={() => navigate('session')}>{session.stage === 'results' ? 'Ver resultados' : 'Continuar'}</button></div>}
-    {loadFailure ? renderProgress() : page === 'learn' ? renderLearn() : page === 'quick' ? renderQuick() : page === 'exam' ? renderExam() : page === 'matching' ? renderMatching() : page === 'session' ? renderSession() : renderProgress()}
+    {loadFailure ? renderProgress() : page === 'learn' || page === 'reels' ? renderLearn() : page === 'quick' ? renderQuick() : page === 'exam' ? renderExam() : page === 'matching' ? renderMatching() : page === 'session' ? renderSession() : renderProgress()}
     </>}
   </main>
-  {openReel && <ReelViewer key={reelKey(openReel.reel)} reel={openReel.reel} reduced={calm} sound={{ muted: prefs.muted, music: prefs.music && !focus, onMute: () => { if (prefs.muted) unlockAudio(); changePrefs(current => ({ ...current, muted: !current.muted })); }, onMusic: () => changePrefs(current => ({ ...current, music: !current.music })) }} onClose={() => setOpenReel(null)} startLabel={!openReel.lesson ? 'Empezar unidad' : session?.lessonId === openReel.lesson.id ? 'Seguir con la lección' : 'Empezar lección'} onStart={() => startFromReel(openReel.unit, openReel.lesson)}/>}
+  {page === 'reels' && !loading && !loadFailure && <ReelFeed reels={feedReels} initial={Math.max(0, feedReels.findIndex(reel => reel === feedStart))} reduced={calm} sound={reelSound} onClose={() => navigate('learn')} startLabel={reel => !reel.lessonId ? 'Empezar unidad' : session?.lessonId === reel.lessonId ? 'Seguir con la lección' : 'Empezar lección'} onStart={reel => startFromReel(unitById.get(reel.unitId)!, reel.lessonId ? lessonById.get(reel.lessonId) : undefined)}/>}
+  {openReel && <ReelViewer key={reelKey(openReel.reel)} reel={openReel.reel} reduced={calm} sound={reelSound} onClose={() => setOpenReel(null)} startLabel={!openReel.lesson ? 'Empezar unidad' : session?.lessonId === openReel.lesson.id ? 'Seguir con la lección' : 'Empezar lección'} onStart={() => startFromReel(openReel.unit, openReel.lesson)}/>}
   {pendingSession && <Confirmation title={t.newSessionTitle} confirm={t.newSessionConfirm} onConfirm={() => activateSession(pendingSession)} onCancel={() => setPendingSession(null)}><p>{t.newSessionBody(session?.responses.length ?? 0, session?.questionIds.length ?? 0)}</p><p>{t.newSessionKept}</p><button className="text-button" onClick={() => { setPendingSession(null); navigate('session'); }}>{t.newSessionKeep}</button></Confirmation>}
   {pendingImport && <Confirmation title="¿Restaurar este respaldo?" confirm="Reemplazar mi progreso" onConfirm={() => void confirmImport()} onCancel={() => setPendingImport(null)} busy={importBusy}><p className="backup-filename">{pendingImport.name}</p><p>Archivo validado: <strong>{pendingImport.progress.completedLessons.length} {plural(pendingImport.progress.completedLessons.length, 'lección', 'lecciones')}</strong>, <strong>{pendingImport.progress.xp} XP</strong> y {pendingImport.progress.activeSession ? 'una sesión guardada' : 'ninguna sesión pendiente'}.</p><p>Esto reemplazará el progreso actual de este dispositivo. Puedes cancelar y exportar primero una copia de tu avance actual.</p></Confirmation>}
   </div>;

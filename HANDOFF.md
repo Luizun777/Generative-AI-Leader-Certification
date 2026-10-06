@@ -3,8 +3,14 @@
 ## Estado en tres líneas
 
 1. Juego funcional con 51 lecciones, 229 preguntas de práctica y 40 de desafío, progreso, respaldos y web sin conexión comprobada.
-2. APK firmada 1.0.3 (versionCode 4, 18,4 MB, SHA-256 `4c0a8586…a731`, misma firma que las anteriores) publicada en `public/downloads`; falta probarla en un dispositivo, incluido el audio de los reels.
+2. APK firmada 1.0.4 (versionCode 5, 18,4 MB, SHA-256 `00e05d17…9dad`, misma firma que las anteriores) publicada en `public/downloads`; falta probarla en un dispositivo, incluido el audio de los reels y el feed.
 3. Publicación Sites pendiente de recuperar su complemento local; revisión Google Skills pendiente de 11 quizzes y cinco guías ES.
+
+## Pestaña «Reels» con feed (2026-10-06)
+
+- Nueva pestaña «Reels» (`src/reels/ReelFeed.tsx`): pantalla completa, columna con `scroll-snap` vertical, un reel por pantalla (66, en orden del curso: reel de unidad y luego los de sus lecciones; `feedOrder` en `src/lib/reels.ts`). Solo el reel visible se monta y suena (IntersectionObserver al 60 %); al terminar avanza solo a los 3,5 s (`onEnded` en `ReelPlayer`, no en modo quieto). Abre en el reel de la lección pendiente. Flechas/PageUp/PageDown y Esc en escritorio; botones arriba/abajo ≥ 760 px.
+- Verificado: `npm test` 79/79; `npm run build` PASS offline (215 archivos); `validate-reels` PASS; en navegador a 375 px y escritorio: abre, desliza al siguiente, auto-avance, teclado. El panel de Claude deja el scroll suave ~20 px descuadrado (rAF limitado); con `scrollBy` el snap es exacto.
+- Sin verificar: gestos táctiles reales y audio al deslizar en el WebView de Android.
 
 ## Reels por lección (2026-10-06)
 

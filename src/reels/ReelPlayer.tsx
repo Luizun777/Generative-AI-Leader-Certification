@@ -11,12 +11,13 @@ import './reels.css';
 
 const HOLD_MS = 220;
 const MOVE_PX = 10;
+const ENDED_MS = 3500;
 const motionQuery = '(prefers-reduced-motion: reduce)';
 
 // The viewer covers the app's top bar, so it carries its own sound controls.
 export interface ReelSound { muted: boolean; music: boolean; onMute: () => void; onMusic: () => void }
-interface Props { reel: Reel; reduced: boolean; active?: boolean; sound?: ReelSound; onClose?: () => void; startLabel: string; onStart: () => void }
-export function ReelPlayer({ reel, reduced, active = true, sound, onClose, startLabel, onStart }: Props) {
+interface Props { reel: Reel; reduced: boolean; active?: boolean; sound?: ReelSound; onClose?: () => void; onEnded?: () => void; focusClose?: boolean; startLabel: string; onStart: () => void }
+export function ReelPlayer({ reel, reduced, active = true, sound, onClose, onEnded, focusClose = true, startLabel, onStart }: Props) {
   // A reel made for one lesson is labelled with it; the rest carry their unit.
   const label = reel.lessonId ? `LECCIÓN ${reel.lessonId}` : `UNIDAD ${reel.unitId}`;
   const [systemReduced, setSystemReduced] = useState(() => window.matchMedia(motionQuery).matches);
@@ -61,6 +62,12 @@ export function ReelPlayer({ reel, reduced, active = true, sound, onClose, start
     event.preventDefault();
   }
   useEffect(() => () => window.clearTimeout(press.current?.timer), []);
+  // In a feed the next reel follows a moment after the closing scene, unless the person repeats or leaves.
+  useEffect(() => {
+    if (!onEnded || !view.ended || still) return;
+    const timer = window.setTimeout(onEnded, ENDED_MS);
+    return () => window.clearTimeout(timer);
+  }, [view.ended, still, onEnded]);
   // Android keeps the web view running in the background; the page never learns it was hidden.
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
@@ -79,7 +86,7 @@ export function ReelPlayer({ reel, reduced, active = true, sound, onClose, start
       {/* A reel is made to be heard: while the app is silent the way to turn the sound on is spelled out. */}
       {sound && (sound.muted ? <button className="reel-control reel-unmute" onClick={sound.onMute}><VolumeX size={19}/><span>Activar sonido</span></button>
         : <button className="reel-control" aria-pressed aria-label="Sonido" title="Sonido activado" onClick={sound.onMute}><Volume2 size={21}/></button>)}
-      {onClose && <button className="reel-control" onClick={onClose} aria-label="Cerrar reel" autoFocus><X size={22}/></button>}
+      {onClose && <button className="reel-control" onClick={onClose} aria-label="Cerrar reel" autoFocus={focusClose}><X size={22}/></button>}
     </div></div>
     <SceneView key={view.scene} scene={scene} label={label} actions={<><button className="button warm" onClick={onStart}><Play size={18} fill="currentColor"/>{startLabel}</button><button className="button outline" onClick={() => dispatch({ type: 'restart' })}><RotateCcw size={17}/>Repetir</button></>}/>
     {/* With the narration on, the voice already says the scene: announcing its text too would talk over it. */}

@@ -92,3 +92,16 @@
 
 @media(max-width:760px){.reel-viewer .reel-stage{width:100vw;height:100dvh;border-radius:0;box-shadow:none}}
 @media(max-width:420px){.reel-open{padding:8px 11px}.lesson-reel{width:44px;padding:0;justify-content:center}.lesson-reel span{display:none}.reel-open + .unit-count{margin-left:8px}}
+
+/* Feed: a full-screen column that snaps one reel at a time, like a short-video app. */
+.reel-feed{position:fixed;inset:0;z-index:40;background:#1b2346;display:flex;justify-content:center}
+.reel-feed-column{height:100dvh;width:100%;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
+.reel-feed-column::-webkit-scrollbar{display:none}
+.reel-feed-item{height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;display:grid;place-items:center}
+.reel-feed .reel-stage{height:min(100dvh - 32px,880px);width:min(100vw,calc(min(100dvh - 32px,880px)*9/16));border-radius:26px;box-shadow:0 8px 0 #0000003d}
+.reel-feed-idle{display:grid;place-items:center;text-align:center;padding:10cqi;font-size:7cqi;font-weight:850;color:#4e5768;cursor:default}
+.reel-feed-nav{position:absolute;right:max(14px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:12px;z-index:6}
+.reel-feed-nav .reel-control:disabled{opacity:.4}
+.reel-feed-count{font-size:.8125rem;font-weight:800;color:#fff;background:#00000040;border-radius:99px;padding:4px 10px}
+@media(max-width:760px){.reel-feed .reel-stage{width:100vw;height:100dvh;border-radius:0;box-shadow:none}.reel-feed-nav{display:none}}
+.reel-feed:focus{outline:none}
