@@ -133,3 +133,14 @@ export function feedOrder(reels: readonly Reel[], units: readonly { id: string; 
   }
   return ordered;
 }
+
+// The playlist groups the feed by world and unit; every entry points at its position in the feed.
+export interface PlaylistItem { index: number; title: string; tag: string }
+export interface PlaylistUnit { id: string; title: string; items: PlaylistItem[] }
+export interface PlaylistWorld { id: number; title: string; units: PlaylistUnit[] }
+export function playlist(feed: readonly Reel[], worlds: readonly { id: number; title: string }[], units: readonly { id: string; worldId: number; title: string }[]): PlaylistWorld[] {
+  return worlds.map(world => ({ id: world.id, title: world.title, units: units.filter(unit => unit.worldId === world.id).map(unit => ({
+    id: unit.id, title: unit.title,
+    items: feed.flatMap((reel, index) => reel.unitId === unit.id ? [{ index, title: reel.title, tag: reel.lessonId ? `Lección ${reel.lessonId}` : 'Unidad' }] : []),
+  })).filter(unit => unit.items.length) })).filter(world => world.units.length);
+}

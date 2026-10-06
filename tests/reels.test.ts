@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Reel } from '../src/lib/reels';
-import { FPS, FRAME_MS, absoluteFrame, advanceClock, feedOrder, firstPendingLesson, locate, reelForLesson, reelFrames, reelKey, sceneCues, sceneFrames, sceneText, segmentFill, startPlayback, step } from '../src/lib/reels';
+import { FPS, FRAME_MS, absoluteFrame, advanceClock, feedOrder, firstPendingLesson, playlist, locate, reelForLesson, reelFrames, reelKey, sceneCues, sceneFrames, sceneText, segmentFill, startPlayback, step } from '../src/lib/reels';
 
 const reel: Reel = { unitId: '1.1', title: 'Prueba', scenes: [
   { kind: 'hook', seconds: 2, title: 'Título', line: 'Línea' },
@@ -123,4 +123,12 @@ test('the feed lists each unit reel before its lesson reels, once each', () => {
   assert.deepEqual(feedOrder(reels, units).map(reelKey), ['1.1', '1.01', '1.02', '2.1', '2.01']);
   // A unit with one lesson has a single reel: it must not appear twice.
   assert.deepEqual(feedOrder([make('4.1')], [{ id: '4.1', lessonIds: ['4.07'] }]).map(reelKey), ['4.1']);
+});
+
+test('the playlist groups feed positions by world and unit, skipping empty ones', () => {
+  const make = (unitId: string, lessonId?: string): Reel => ({ unitId, lessonId, title: lessonId ?? unitId, scenes: reel.scenes });
+  const feed = [make('1.1'), make('1.1', '1.01'), make('2.1')];
+  const list = playlist(feed, [{ id: 1, title: 'Uno' }, { id: 2, title: 'Dos' }, { id: 3, title: 'Vacío' }], [{ id: '1.1', worldId: 1, title: 'A' }, { id: '2.1', worldId: 2, title: 'B' }, { id: '3.1', worldId: 3, title: 'C' }]);
+  assert.deepEqual(list.map(world => world.id), [1, 2]);
+  assert.deepEqual(list[0].units[0].items, [{ index: 0, title: '1.1', tag: 'Unidad' }, { index: 1, title: '1.01', tag: 'Lección 1.01' }]);
 });

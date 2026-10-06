@@ -105,3 +105,19 @@
 .reel-feed-count{font-size:.8125rem;font-weight:800;color:#fff;background:#00000040;border-radius:99px;padding:4px 10px}
 @media(max-width:760px){.reel-feed .reel-stage{width:100vw;height:100dvh;border-radius:0;box-shadow:none}.reel-feed-nav{display:none}}
 .reel-feed:focus{outline:none}
+
+/* Playlist: a sheet over the feed to start from the top or jump to any world, unit or lesson. */
+.reel-feed-list{position:absolute;left:max(14px,env(safe-area-inset-left));bottom:calc(18px + env(safe-area-inset-bottom));z-index:6}
+.reel-list-backdrop{position:absolute;inset:0;z-index:10;background:#1b2346cc;display:grid;place-items:end center}
+.reel-list{width:min(100%,520px);max-height:86dvh;overflow-y:auto;overscroll-behavior:contain;background:#fffefa;color:var(--ink);border-radius:26px 26px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom))}
+.reel-list-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.reel-list-head h2{font-size:1.35rem;font-weight:850;letter-spacing:-.02em}
+.reel-list-start{width:100%;justify-content:center;margin-bottom:6px}
+.reel-list-world{font-size:.8125rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:20px 0 4px}
+.reel-list-unit{margin-top:10px}
+.reel-list-unit-title{font-size:.9375rem;font-weight:800;margin-bottom:4px}
+.reel-list-item{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;text-align:left;padding:8px 12px;border-radius:12px;background:none;font-size:.9375rem;font-weight:650}
+.reel-list-item:hover{background:#f0f1f7}
+.reel-list-item[aria-current=true]{background:#edf0ff;color:var(--blue);box-shadow:inset 0 0 0 1px #dde3ff}
+.reel-list-tag{flex-shrink:0;min-width:5.6rem;font-size:.75rem;font-weight:800;letter-spacing:.04em;color:var(--muted)}
+@media(min-width:761px){.reel-list-backdrop{place-items:center}.reel-list{border-radius:26px;padding-bottom:24px}.reel-feed-list{bottom:auto;top:max(14px,env(safe-area-inset-top))}}

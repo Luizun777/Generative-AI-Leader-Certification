@@ -11,7 +11,7 @@ import { COPY } from './lib/copy';
 import { completeLesson, newProgress, parseBackup, recordAnswer, selectQuestions, startSession, touchStreak } from './lib/engine';
 import { defaultPrefs, loadPrefs, savePrefs, soundLevel, withSoundLevel } from './lib/prefs';
 import type { Prefs } from './lib/prefs';
-import { feedOrder, firstPendingLesson, reelForLesson, reelKey } from './lib/reels';
+import { feedOrder, firstPendingLesson, playlist as reelPlaylist, reelForLesson, reelKey } from './lib/reels';
 import type { Reel, ReelSet } from './lib/reels';
 import type { SoundLevel } from './lib/sound';
 import { eligibleYesNo } from './lib/yesno';
@@ -33,6 +33,7 @@ import { registerStudyTools } from './webmcp';
 const curriculum = rawCurriculum as Curriculum;
 const reelByKey = new Map((rawReels as ReelSet).reels.map(reel => [reelKey(reel), reel]));
 const feedReels = feedOrder((rawReels as ReelSet).reels, curriculum.units);
+const feedPlaylist = reelPlaylist(feedReels, curriculum.worlds, curriculum.units);
 const unitById = new Map(curriculum.units.map(unit => [unit.id, unit]));
 const questionById = new Map(curriculum.questions.map(question => [question.id, question]));
 const lessonById = new Map(curriculum.lessons.map(lesson => [lesson.id, lesson]));
@@ -368,7 +369,7 @@ export default function App() {
     {loadFailure ? renderProgress() : page === 'learn' || page === 'reels' ? renderLearn() : page === 'quick' ? renderQuick() : page === 'exam' ? renderExam() : page === 'matching' ? renderMatching() : page === 'session' ? renderSession() : renderProgress()}
     </>}
   </main>
-  {page === 'reels' && !loading && !loadFailure && <ReelFeed reels={feedReels} initial={Math.max(0, feedReels.findIndex(reel => reel === feedStart))} reduced={calm} sound={reelSound} onClose={() => navigate('learn')} startLabel={reel => !reel.lessonId ? 'Empezar unidad' : session?.lessonId === reel.lessonId ? 'Seguir con la lección' : 'Empezar lección'} onStart={reel => startFromReel(unitById.get(reel.unitId)!, reel.lessonId ? lessonById.get(reel.lessonId) : undefined)}/>}
+  {page === 'reels' && !loading && !loadFailure && <ReelFeed reels={feedReels} playlist={feedPlaylist} initial={Math.max(0, feedReels.findIndex(reel => reel === feedStart))} reduced={calm} sound={reelSound} onClose={() => navigate('learn')} startLabel={reel => !reel.lessonId ? 'Empezar unidad' : session?.lessonId === reel.lessonId ? 'Seguir con la lección' : 'Empezar lección'} onStart={reel => startFromReel(unitById.get(reel.unitId)!, reel.lessonId ? lessonById.get(reel.lessonId) : undefined)}/>}
   {openReel && <ReelViewer key={reelKey(openReel.reel)} reel={openReel.reel} reduced={calm} sound={reelSound} onClose={() => setOpenReel(null)} startLabel={!openReel.lesson ? 'Empezar unidad' : session?.lessonId === openReel.lesson.id ? 'Seguir con la lección' : 'Empezar lección'} onStart={() => startFromReel(openReel.unit, openReel.lesson)}/>}
   {pendingSession && <Confirmation title={t.newSessionTitle} confirm={t.newSessionConfirm} onConfirm={() => activateSession(pendingSession)} onCancel={() => setPendingSession(null)}><p>{t.newSessionBody(session?.responses.length ?? 0, session?.questionIds.length ?? 0)}</p><p>{t.newSessionKept}</p><button className="text-button" onClick={() => { setPendingSession(null); navigate('session'); }}>{t.newSessionKeep}</button></Confirmation>}
   {pendingImport && <Confirmation title="¿Restaurar este respaldo?" confirm="Reemplazar mi progreso" onConfirm={() => void confirmImport()} onCancel={() => setPendingImport(null)} busy={importBusy}><p className="backup-filename">{pendingImport.name}</p><p>Archivo validado: <strong>{pendingImport.progress.completedLessons.length} {plural(pendingImport.progress.completedLessons.length, 'lección', 'lecciones')}</strong>, <strong>{pendingImport.progress.xp} XP</strong> y {pendingImport.progress.activeSession ? 'una sesión guardada' : 'ninguna sesión pendiente'}.</p><p>Esto reemplazará el progreso actual de este dispositivo. Puedes cancelar y exportar primero una copia de tu avance actual.</p></Confirmation>}
